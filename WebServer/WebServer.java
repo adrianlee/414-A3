@@ -95,42 +95,63 @@ final class HttpRequest implements Runnable {
 
 		// Display the request line
 		System.out.println();
-		System.out.println(requestLine);
-
-		// Get and display the header lines
-		String headerLine = null;
-		while ((headerLine = inFromClient.readLine()).length() != 0) {
-			System.out.println(headerLine);
-		}
+		// System.out.println(requestLine);
 
 		// Extract the filename from the request line
 		StringTokenizer tokens = new StringTokenizer(requestLine);
-		tokens.nextToken(); // skip over the method, which we'll assume is "GET"
-		String fileName = tokens.nextToken();
+		String requestMethod = tokens.nextToken();
+		String requestPath = tokens.nextToken();
 
-		// Prepend a "." so that the file request is within the current directory
-		fileName = "." + fileName;
-
-		// Open the requested file
-		FileInputStream fis = null;
-		boolean fileExists = true;
-		try {
-			fis = new FileInputStream(fileName);
-		} catch (FileNotFoundException e) {
-			fileExists = false;
-		}
+		// Print the Request Method and Path
+		System.out.println(requestMethod);
+		System.out.println(requestPath);
 
 		// Construct the response message header
 		String statusLine = null;
 		String contentTypeLine = null;
-		String errorMessage = "<HTML><HEAD><TITLE>404 Not Found</TITLE></HEAD><BODY>404 Not Found</BODY></HTML>";
-		if (fileExists) {
-			statusLine = "HTTP/1.0 200 OK" + CRLF;
-			contentTypeLine = "Content-type: " + contentType(fileName) + CRLF;
-		} else {
-			statusLine = "HTTP/1.0 404 Not Found" + CRLF;
-			contentTypeLine = "Content-type: text/html" + CRLF;
+
+		// statusLine = "HTTP/1.0 200 OK" + CRLF;
+		// contentTypeLine = "Content-type: " + contentType(requestPath) + CRLF;
+
+		// statusLine = "HTTP/1.0 404 Not Found" + CRLF;
+		// contentTypeLine = "Content-type: text/html" + CRLF;
+
+		switch (requestMethod) {
+			// GET
+			case "GET":
+				System.out.println("get");
+				break;
+
+			// CREATE BUT NOT UPDATE AN EXISTING ONE
+			case "POST":
+				System.out.println("post");
+				break;
+
+			// CREATE AND UPDATE
+			case "PUT":
+				System.out.println("put");
+				break;
+
+			// DELETE
+			case "DELETE":
+				System.out.println("delete");
+				break;
+
+			// DEFAULT
+			default:
+				System.out.println("unrecognized method");
+				// return 501 Not Implemented
+				break;
 		}
+
+		// statusLine = "HTTP/1.0 200 OK" + CRLF;
+		// statusLine = "HTTP/1.0 201 Created" + CRLF;	// creation
+		// statusLine = "HTTP/1.0 202 Accepted" + CRLF;	// update
+		// statusLine = "HTTP/1.0 400 Bad Request" + CRLF;	// bad formed request
+		// statusLine = "HTTP/1.0 404 Not Found" + CRLF;
+		// statusLine = "HTTP/1.0 405 Method Not Allowed" + CRLF;
+		// statusLine = "HTTP/1.0 500 Server Error" + CRLF;
+		// statusLine = "HTTP/1.0 501 Not Implemented" + CRLF;
 
 		// Send the status line and our header (which only contains the content-type line)
 		outToClient.writeBytes(statusLine);
