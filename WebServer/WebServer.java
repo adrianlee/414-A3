@@ -11,6 +11,7 @@
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import org.w3c.dom.*;
 
 /**
  * This is the main class which runs the loop that listens for incoming requests
