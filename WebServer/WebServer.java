@@ -150,17 +150,25 @@ final class HttpRequest implements Runnable {
 		StringTokenizer tokens = new StringTokenizer(requestLine);
 		String requestMethod = tokens.nextToken();
 		String requestPath = tokens.nextToken();
+		String requestQuery = null;
+
+		URL url = new URL("http://local.dev" + requestPath);
+
+		requestPath = url.getPath();
+		requestQuery = url.getQuery();
 
 		// might want to decode after tokenizing path.
 		requestPath = URLDecoder.decode(requestPath, "UTF-8");
 
 		tokens = new StringTokenizer(requestPath, "/");
-		System.out.println(tokens.nextToken());
-		System.out.println(tokens.nextToken());
+		// System.out.println(tokens.nextToken());
+		// System.out.println(tokens.nextToken());
 
-		// Print the Request Method and Path
-		System.out.println(requestMethod);
-		System.out.println(requestPath);
+		// // Print the Request Method and Path
+		System.out.println("METHOD: " + requestMethod);
+		System.out.println("PATH: " + requestPath);
+		System.out.println("QUERY: " + requestQuery);
+		System.out.println();
 
 
 		// Construct the response message header
