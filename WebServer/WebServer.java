@@ -21,7 +21,7 @@ import org.w3c.dom.*;
  *
  */
 public final class WebServer {
-	private static File[] getXMLfiles(File path){
+	public static File[] getXMLfiles(File path){
 		int xmlCount = 0;
 		for (File file: path.listFiles()){
 			String extension = file.getName().substring(file.getName().lastIndexOf('.'));
