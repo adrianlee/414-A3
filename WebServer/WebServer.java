@@ -20,9 +20,41 @@ import java.util.*;
  *
  */
 public final class WebServer {
+	private static File[] getXMLfiles(File path){
+		int xmlCount = 0;
+		for (File file: path.listFiles()){
+			String extension = file.getName().substring(file.getName().lastIndexOf('.'));
+			if(extension.equals(".xml") || extension.equals("xml")){
+				//System.out.println(file.getName());
+				xmlCount++;
+			}
+		}
+		File[] xmlFiles = new File[xmlCount];
+		for (File file: path.listFiles()){
+			String extension = file.getName().substring(file.getName().lastIndexOf('.'));
+			if(extension.equals(".xml") || extension.equals("xml")){
+				xmlFiles[xmlCount-1] = file;
+				xmlCount--;
+			}
+		}
+		return xmlFiles;
+	}
+
+	private static Document[] buildDOMs(File path){
+		File[] xmlFiles = getXMLfiles(path);
+		// DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        Document[] doms = new Document [xmlFiles.length()];
+		for (int i = 0; i<xmlFiles.length(); i++){
+			doms[i] = builder.parse(xmlFiles[i]);
+		}
+		return doms;
+	}
+
 	public static void main(String argx[]) throws Exception {
 		// Set the port number (may not work with 80)
 		int port = 6789;
+		Document[] doms = buildDOMs(new File("."));
 
 		// Create the socket to listen for incoming connections
 		ServerSocket welcomeSocket = new ServerSocket(port);
