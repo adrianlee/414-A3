@@ -13,8 +13,7 @@ import java.net.*;
 import java.util.*;
 import org.w3c.dom.*;
 import javax.xml.*;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.*;
 
 /**
  * This is the main class which runs the loop that listens for incoming requests
@@ -56,14 +55,16 @@ public final class WebServer {
 			return doms;
 		} catch(Exception e){
 			return null;
-		}	
-		
+		}
 	}
 
 	public static void main(String argx[]) throws Exception {
 		// Set the port number (may not work with 80)
 		int port = 6789;
 		Document[] doms = buildDOMs(new File("."));
+
+		System.out.println("Root element: " + doms[0].getDocumentElement().getNodeName());
+		System.out.println("Root element: " + doms[1].getDocumentElement().getNodeName());
 
 		// Create the socket to listen for incoming connections
 		ServerSocket welcomeSocket = new ServerSocket(port);
