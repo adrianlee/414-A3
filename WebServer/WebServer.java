@@ -22,6 +22,8 @@ import javax.xml.parsers.*;
  * @author michaelrabbat
  *
  */
+
+
 public final class WebServer {
 	public static File[] getXMLfiles(File path){
 		int xmlCount = 0;
@@ -63,8 +65,8 @@ public final class WebServer {
 		int port = 6789;
 		Document[] doms = buildDOMs(new File("."));
 
-		System.out.println("Root element: " + doms[0].getDocumentElement().getNodeName());
-		System.out.println("Root element: " + doms[1].getDocumentElement().getNodeName());
+		//System.out.println("Root element: " + doms[0].getDocumentElement().getNodeName());
+		// System.out.println("Root element: " + doms[1].getDocumentElement().getNodeName());
 
 		// Create the socket to listen for incoming connections
 		ServerSocket welcomeSocket = new ServerSocket(port);
@@ -76,7 +78,7 @@ public final class WebServer {
 			Socket connectionSocket = welcomeSocket.accept();
 
 			// Construct an HttpRequest object to process the request message
-			HttpRequest request = new HttpRequest(connectionSocket);
+			HttpRequest request = new HttpRequest(connectionSocket, doms);
 
 			// Create a new thread to process the request
 			Thread thread = new Thread(request);
@@ -96,13 +98,14 @@ public final class WebServer {
 final class HttpRequest implements Runnable {
 	final static String CRLF = "\r\n";
 	Socket socket;
-
+	Document[] doms;
 	/**
 	 * Constructor takes the socket for this request
 	 */
-	public HttpRequest(Socket socket) throws Exception
+	public HttpRequest(Socket socket, Document[] doms) throws Exception
 	{
 		this.socket = socket;
+		this.doms = doms;
 	}
 
 	/**
@@ -127,6 +130,9 @@ final class HttpRequest implements Runnable {
 		// Get a reference to the socket's input and output streams
 		InputStream is = socket.getInputStream();
 		OutputStream os = socket.getOutputStream();
+
+		System.out.println("Root element: " + doms[0].getDocumentElement().getNodeName());
+		System.out.println("Root element: " + doms[1].getDocumentElement().getNodeName());
 
 		// Set up input stream filters
 		BufferedReader inFromClient = new BufferedReader(new InputStreamReader(is));
