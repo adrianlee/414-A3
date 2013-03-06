@@ -14,6 +14,7 @@ import java.util.*;
 import org.w3c.dom.*;
 import javax.xml.*;
 import javax.xml.parsers.*;
+import java.net.*;
 
 /**
  * This is the main class which runs the loop that listens for incoming requests
@@ -150,9 +151,12 @@ final class HttpRequest implements Runnable {
 		String requestMethod = tokens.nextToken();
 		String requestPath = tokens.nextToken();
 
+		requestPath = URLDecoder.decode(requestPath, "UTF-8");
+
 		// Print the Request Method and Path
 		System.out.println(requestMethod);
 		System.out.println(requestPath);
+
 
 		// Construct the response message header
 		String statusLine = null;
