@@ -151,7 +151,12 @@ final class HttpRequest implements Runnable {
 		String requestMethod = tokens.nextToken();
 		String requestPath = tokens.nextToken();
 
+		// might want to decode after tokenizing path.
 		requestPath = URLDecoder.decode(requestPath, "UTF-8");
+
+		tokens = new StringTokenizer(requestPath, "/");
+		System.out.println(tokens.nextToken());
+		System.out.println(tokens.nextToken());
 
 		// Print the Request Method and Path
 		System.out.println(requestMethod);
