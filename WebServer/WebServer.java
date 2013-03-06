@@ -12,6 +12,9 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import org.w3c.dom.*;
+import javax.xml.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 /**
  * This is the main class which runs the loop that listens for incoming requests
@@ -44,12 +47,17 @@ public final class WebServer {
 	private static Document[] buildDOMs(File path){
 		File[] xmlFiles = getXMLfiles(path);
 		// DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        Document[] doms = new Document [xmlFiles.length()];
-		for (int i = 0; i<xmlFiles.length(); i++){
-			doms[i] = builder.parse(xmlFiles[i]);
-		}
-		return doms;
+        try{
+        	DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+	        Document[] doms = new Document [xmlFiles.length];
+			for (int i = 0; i<xmlFiles.length; i++){
+				doms[i] = dBuilder.parse(xmlFiles[i]);
+			}
+			return doms;
+		} catch(Exception e){
+			return null;
+		}	
+		
 	}
 
 	public static void main(String argx[]) throws Exception {
