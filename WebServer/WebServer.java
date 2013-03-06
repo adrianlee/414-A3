@@ -15,6 +15,7 @@ import org.w3c.dom.*;
 import javax.xml.*;
 import javax.xml.parsers.*;
 import java.net.*;
+import java.io.FileNotFoundException;
 
 /**
  * This is the main class which runs the loop that listens for incoming requests
@@ -122,6 +123,16 @@ final class HttpRequest implements Runnable {
 		}
 	}
 
+	private Document getDOM(String rootElement) throws FileNotFoundException{
+		for(Document dom : doms){
+			if(dom.getDocumentElement().getNodeName().equals(rootElement)){
+				return dom;
+				
+			}
+		}
+		throw new FileNotFoundException();
+	}
+
 	/**
 	 * This is where the action occurs
 	 * @throws Exception
@@ -174,10 +185,19 @@ final class HttpRequest implements Runnable {
 				break;
 			}
 		}
+		
+		Document xmlDOM;
+
+		try{
+			xmlDOM = getDOM(routes.get(0));
+		}catch(Exception e){
+			//handle xml not found!
+		}
+
 
 		System.out.println(routes.get(1));
 		System.out.println(routes.get(2));
-		System.out.println(routes.get(3));
+		//System.out.println(routes.get(3));
 		System.out.println();
 
 		// // Print the Request Method and Path
