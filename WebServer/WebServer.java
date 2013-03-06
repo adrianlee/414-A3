@@ -161,8 +161,24 @@ final class HttpRequest implements Runnable {
 		requestPath = URLDecoder.decode(requestPath, "UTF-8");
 
 		tokens = new StringTokenizer(requestPath, "/");
-		// System.out.println(tokens.nextToken());
-		// System.out.println(tokens.nextToken());
+
+		List<String> routes = new ArrayList<String>();
+		String next = null;
+		while (true) {
+			try {
+				next = tokens.nextToken();
+				if (next != null) {
+					routes.add(next);
+				}
+			} catch (Exception e) {
+				break;
+			}
+		}
+
+		System.out.println(routes.get(1));
+		System.out.println(routes.get(2));
+		System.out.println(routes.get(3));
+		System.out.println();
 
 		// // Print the Request Method and Path
 		System.out.println("METHOD: " + requestMethod);
