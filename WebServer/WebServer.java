@@ -11,7 +11,6 @@
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import javax.xml.*;
 
 /**
  * This is the main class which runs the loop that listens for incoming requests
@@ -21,34 +20,10 @@ import javax.xml.*;
  *
  */
 public final class WebServer {
-	private static File[] getXMLfiles(File path){
-		int xmlCount = 0;
-		for (File file: path.listFiles()){
-			String extension = file.getName().substring(file.getName().lastIndexOf('.'));
-			if(extension.equals(".xml") || extension.equals("xml")){
-				//System.out.println(file.getName());
-				xmlCount++;
-			}
-		}
-		File[] xmlFiles = new File[xmlCount];
-		for (File file: path.listFiles()){
-			String extension = file.getName().substring(file.getName().lastIndexOf('.'));
-			if(extension.equals(".xml") || extension.equals("xml")){
-				xmlFiles[xmlCount-1] = file;
-				xmlCount--;
-			}
-		}
-		return xmlFiles;
-	}
-
-
 	public static void main(String argx[]) throws Exception {
 		// Set the port number (may not work with 80)
 		int port = 6789;
-		File[] xmlFiles = getXMLfiles(new File("."));
-		for(File file : xmlFiles){
-			System.out.println(file.getName());
-		}
+
 		// Create the socket to listen for incoming connections
 		ServerSocket welcomeSocket = new ServerSocket(port);
 
@@ -138,8 +113,8 @@ final class HttpRequest implements Runnable {
 		// statusLine = "HTTP/1.0 200 OK" + CRLF;
 		// contentTypeLine = "Content-type: " + contentType(requestPath) + CRLF;
 
-		// statusLine = "HTTP/1.0 404 Not Found" + CRLF;
-		// contentTypeLine = "Content-type: text/html" + CRLF;
+		statusLine = "HTTP/1.0 404 Not Found" + CRLF;
+		contentTypeLine = "Content-type: text/html" + CRLF;
 
 		switch (requestMethod) {
 			// GET
@@ -185,7 +160,7 @@ final class HttpRequest implements Runnable {
 
 		// Send the body of the message (the web object)
 		// sendBytes(fis, outToClient);
-		// outToClient.writeBytes(errorMessage);
+		outToClient.writeBytes("hello");
 
 		// Close the streams and sockets
 		os.close();
