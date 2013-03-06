@@ -159,12 +159,8 @@ final class HttpRequest implements Runnable {
 		outToClient.writeBytes(CRLF);
 
 		// Send the body of the message (the web object)
-		if (fileExists) {
-			sendBytes(fis, outToClient);
-			fis.close();
-		} else {
-			outToClient.writeBytes(errorMessage);
-		}
+		// sendBytes(fis, outToClient);
+		// outToClient.writeBytes(errorMessage);
 
 		// Close the streams and sockets
 		os.close();
