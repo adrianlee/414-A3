@@ -41,14 +41,22 @@ public final class WebServer {
 		return xmlFiles;
 	}
 
+	private static Document[] buildDOMs(File path){
+		File[] xmlFiles = getXMLfiles(path);
+		// DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();		
+        Document[] doms = new Document [xmlFiles.length()];
+		for (int i = 0; i<xmlFiles.length(); i++){
+			doms[i] = builder.parse(xmlFiles[i]);
+		}
+		return doms;
+	}
 
 	public static void main(String argx[]) throws Exception {
 		// Set the port number (may not work with 80)
 		int port = 6789;
-		File[] xmlFiles = getXMLfiles(new File("."));
-		for(File file : xmlFiles){
-			System.out.println(file.getName());
-		}
+		Document[] doms = buildDOMs(new File("."));
+		
 		// Create the socket to listen for incoming connections
 		ServerSocket welcomeSocket = new ServerSocket(port);
 
