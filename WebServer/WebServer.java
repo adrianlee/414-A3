@@ -155,18 +155,43 @@ final class HttpRequest implements Runnable {
 	// }
 
 
-	private void doSomething(Node node) {
+	private void getData(Node node, String[] routes, int r) throws FileNotFoundException{
     // do something with the current node instead of System.out
     System.out.println(node.getNodeName());
-
     NodeList nodeList = node.getChildNodes();
-    for (int i = 0; i < nodeList.getLength(); i++) {
-        Node currentNode = nodeList.item(i);
-        if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
-            //calls this method for all the children which is Element
-            doSomething(currentNode);
-        }
+	Node firstNode = nodeList.item(0);
+    System.out.println(firstNode.hasAttributes());
+    if (nodeList.item(0).hasAttributes()){
+    	System.out.println(node.getNodeName() + "HAS ATTRIBUTES");
+    	String attribute = routes[r+1];
+    	for (int i = 0; i < nodeList.getLength(); i++) {
+
+        	Node currentNode = nodeList.item(i);
+			if (currentNode.getAttributes().getNamedItem("id").getNodeValue().equals(attribute)){
+				getData(currentNode, routes, r+2);
+    			return;
+    		}
+   		 }
+
+    }else{ //if no attribute
+    	System.out.println(node.getNodeName() + "HAS NO ATTRIBUTES");
+    	String tag = routes[r];
+    	System.out.println("TAG = "+ tag);
+    	Node currentNode;
+    	for (int i = 0; i<nodeList.getLength(); i++){
+    		currentNode = nodeList.item(i);
+    		if (currentNode.getNodeName().equals(tag)){
+    			getData(currentNode, routes, ++r);
+    			return;
+    		}
+
+    	}
+    	
+    	throw new FileNotFoundException();
+    	
     }
+
+    
 }
 
 	/**
@@ -226,17 +251,19 @@ final class HttpRequest implements Runnable {
 
 		try{
 			xmlDOM = (Document)doms.get(routes.get(0));
-			System.out.println(xmlDOM.getDocumentElement().getNodeName());
+			String[] stringRoutes = new String[routes.size()];
+			stringRoutes = routes.toArray(stringRoutes);
+			getData(xmlDOM.getDocumentElement(), stringRoutes, 2);
 
 		}catch(Exception e){
 			//handle xml not found!
-			System.out.println("not found");
+			System.out.println(e);
 		}
 
 
 
-		System.out.println(routes.get(1));
-		System.out.println(routes.get(2));
+		//System.out.println(routes.get(1));
+		//System.out.println(routes.get(2));
 		//System.out.println(routes.get(3));
 		System.out.println();
 
