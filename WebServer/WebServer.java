@@ -50,11 +50,30 @@ public final class WebServer {
 	private static Document[] buildDOMs(File path){
 		File[] xmlFiles = getXMLfiles(path);
 		// DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        try{
-        	DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-	        Document[] doms = new Document [xmlFiles.length];
+    try{
+    	DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+      Document[] doms = new Document [xmlFiles.length];
 			for (int i = 0; i<xmlFiles.length; i++){
 				doms[i] = dBuilder.parse(xmlFiles[i]);
+			}
+			return doms;
+		} catch(Exception e){
+			return null;
+		}
+	}
+
+	private static Hashtable<String,Document> buildTable(File path){
+		File[] xmlFiles = getXMLfiles(path);
+		// DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+    try{
+    	DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+      // Document[] doms = new Document [xmlFiles.length];
+
+      Hashtable<String,Document> doms = new Hashtable<String,Document>();
+
+			for (int i = 0; i<xmlFiles.length; i++){
+				doms.put(xmlFiles[i].getName().substring(0, xmlFiles[i].getName().lastIndexOf('.')), dBuilder.parse(xmlFiles[i]));
+				// doms[i] = dBuilder.parse(xmlFiles[i]);
 			}
 			return doms;
 		} catch(Exception e){
@@ -65,9 +84,11 @@ public final class WebServer {
 	public static void main(String argx[]) throws Exception {
 		// Set the port number (may not work with 80)
 		int port = 6789;
-		Document[] doms = buildDOMs(new File("."));
+		// Document[] doms = buildDOMs(new File("."));
 
-		//System.out.println("Root element: " + doms[0].getDocumentElement().getNodeName());
+		Hashtable<String,Document> doms = buildTable(new File("."));
+
+		// System.out.println("Root element: " + doms[0].getDocumentElement().getNodeName());
 		// System.out.println("Root element: " + doms[1].getDocumentElement().getNodeName());
 
 		// Create the socket to listen for incoming connections
@@ -100,11 +121,11 @@ public final class WebServer {
 final class HttpRequest implements Runnable {
 	final static String CRLF = "\r\n";
 	Socket socket;
-	Document[] doms;
+	Hashtable doms;
 	/**
 	 * Constructor takes the socket for this request
 	 */
-	public HttpRequest(Socket socket, Document[] doms) throws Exception
+	public HttpRequest(Socket socket, Hashtable doms) throws Exception
 	{
 		this.socket = socket;
 		this.doms = doms;
@@ -123,15 +144,30 @@ final class HttpRequest implements Runnable {
 		}
 	}
 
-	private Document getDOM(String rootElement) throws FileNotFoundException{
-		for(Document dom : doms){
-			if(dom.getDocumentElement().getNodeName().equals(rootElement)){
-				return dom;
-				
-			}
-		}
-		throw new FileNotFoundException();
-	}
+	// private Document getDOM(String rootElement) throws FileNotFoundException{
+	// 	for(Document dom : doms){
+	// 		if(dom.getNodeName().equals(rootElement)){
+	// 			return dom;
+
+	// 		}
+	// 	}
+	// 	throw new FileNotFoundException();
+	// }
+
+
+	private void doSomething(Node node) {
+    // do something with the current node instead of System.out
+    System.out.println(node.getNodeName());
+
+    NodeList nodeList = node.getChildNodes();
+    for (int i = 0; i < nodeList.getLength(); i++) {
+        Node currentNode = nodeList.item(i);
+        if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
+            //calls this method for all the children which is Element
+            doSomething(currentNode);
+        }
+    }
+}
 
 	/**
 	 * This is where the action occurs
@@ -143,8 +179,8 @@ final class HttpRequest implements Runnable {
 		InputStream is = socket.getInputStream();
 		OutputStream os = socket.getOutputStream();
 
-		System.out.println("Root element: " + doms[0].getDocumentElement().getNodeName());
-		System.out.println("Root element: " + doms[1].getDocumentElement().getNodeName());
+		System.out.println("Root element: " + ((Document)doms.get("library")).getDocumentElement().getNodeName());
+		System.out.println("Root element: " + ((Document)doms.get("customers")).getDocumentElement().getNodeName());
 
 		// Set up input stream filters
 		BufferedReader inFromClient = new BufferedReader(new InputStreamReader(is));
@@ -185,14 +221,18 @@ final class HttpRequest implements Runnable {
 				break;
 			}
 		}
-		
-		Document xmlDOM;
+
+		Document xmlDOM = null;
 
 		try{
-			xmlDOM = getDOM(routes.get(0));
+			xmlDOM = (Document)doms.get(routes.get(0));
+			System.out.println(xmlDOM.getDocumentElement().getNodeName());
+
 		}catch(Exception e){
 			//handle xml not found!
+			System.out.println("not found");
 		}
+
 
 
 		System.out.println(routes.get(1));
