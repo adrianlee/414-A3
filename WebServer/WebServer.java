@@ -167,11 +167,8 @@ final class HttpRequest implements Runnable {
     System.out.println("Node type " + firstNode.getNodeType());
     if (nodeList.item(1).hasAttributes()){
     	System.out.println(node.getNodeName() + "HAS ATTRIBUTES");
-    	String attribute = "";
-    	try{ attribute = routes[r+1];}catch(Exception e){
-    		System.out.println("Exception NULLPOINTER HERE"); return;
-    	}
-    	for (int i = 0; i < nodeList.getLength(); i++) {
+    	String attribute = routes[r+1];
+    	for (int i = 1; i < nodeList.getLength(); i=i+2) {
 
         	Node currentNode = nodeList.item(i);
 			if (currentNode.getAttributes().getNamedItem("id").getNodeValue().equals(attribute)){
