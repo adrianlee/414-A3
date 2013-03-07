@@ -159,11 +159,18 @@ final class HttpRequest implements Runnable {
     // do something with the current node instead of System.out
     System.out.println(node.getNodeName());
     NodeList nodeList = node.getChildNodes();
-	Node firstNode = nodeList.item(0);
-    System.out.println(firstNode.hasAttributes());
-    if (nodeList.item(0).hasAttributes()){
+	Node firstNode = nodeList.item(1);
+    for (int x = 0; x<nodeList.getLength(); x++){
+    	System.out.println("Node Name: " + nodeList.item(x).getNodeName());
+    }
+    if(firstNode.getNodeType() == Node.ELEMENT_NODE)
+    System.out.println("Node type " + firstNode.getNodeType());
+    if (nodeList.item(1).hasAttributes()){
     	System.out.println(node.getNodeName() + "HAS ATTRIBUTES");
-    	String attribute = routes[r+1];
+    	String attribute = "";
+    	try{ attribute = routes[r+1];}catch(Exception e){
+    		System.out.println("Exception NULLPOINTER HERE"); return;
+    	}
     	for (int i = 0; i < nodeList.getLength(); i++) {
 
         	Node currentNode = nodeList.item(i);
@@ -251,6 +258,7 @@ final class HttpRequest implements Runnable {
 
 		try{
 			xmlDOM = (Document)doms.get(routes.get(0));
+			//xmlDOM.getDocumentElement().normalize();
 			String[] stringRoutes = new String[routes.size()];
 			stringRoutes = routes.toArray(stringRoutes);
 			getData(xmlDOM.getDocumentElement(), stringRoutes, 2);
