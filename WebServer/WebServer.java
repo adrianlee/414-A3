@@ -47,28 +47,11 @@ public final class WebServer {
 		return xmlFiles;
 	}
 
-	private static Document[] buildDOMs(File path){
-		File[] xmlFiles = getXMLfiles(path);
-		// DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-    try{
-    	DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-      Document[] doms = new Document [xmlFiles.length];
-			for (int i = 0; i<xmlFiles.length; i++){
-				doms[i] = dBuilder.parse(xmlFiles[i]);
-			}
-			return doms;
-		} catch(Exception e){
-			return null;
-		}
-	}
-
 	private static Hashtable<String,Document> buildTable(File path){
 		File[] xmlFiles = getXMLfiles(path);
-		// DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-    try{
-    	DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-      // Document[] doms = new Document [xmlFiles.length];
 
+    try {
+    	DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
       Hashtable<String,Document> doms = new Hashtable<String,Document>();
 
 			for (int i = 0; i<xmlFiles.length; i++){
@@ -144,72 +127,74 @@ final class HttpRequest implements Runnable {
 		}
 	}
 
-	// private Document getDOM(String rootElement) throws FileNotFoundException{
-	// 	for(Document dom : doms){
-	// 		if(dom.getNodeName().equals(rootElement)){
-	// 			return dom;
-
-	// 		}
-	// 	}
-	// 	throw new FileNotFoundException();
-	// }
-
-
-	private void getData(Node node, String[] routes, int r) throws FileNotFoundException{
-    // do something with the current node instead of System.out
+	private Node getData(Node node, String[] routes, int r) throws FileNotFoundException{
+    // Print root node
     System.out.println(node.getNodeName());
+
+    // Make node list of children
     NodeList nodeList = node.getChildNodes();
-	if(nodeList.getLength() == 1){
-		System.out.println("OUTPUT = " + nodeList.item(0).getTextContent());
-		return;
-	}	else{
-		Node firstNode = nodeList.item(1);
-		
-	    for (int x = 0; x<nodeList.getLength(); x++){
+
+    // Check if single node.
+		if (nodeList.getLength() == 1) {
+			// System.out.println("OUTPUT = " + nodeList.item(0).getTextContent());
+			return nodeList.item(0);
+
+		}	else {
+
+			Node firstNode = nodeList.item(1);
+
+	    for (int x = 0; x<nodeList.getLength(); x++) {
 	    	try{
-	    		System.out.println("Node Name: " + nodeList.item(x).getNodeName());
-	    	} catch (Exception e){
+	    		// System.out.println("Node Name: " + nodeList.item(x).getNodeName());
+	    	} catch (Exception e) {
 	    		//We have reached text
-	    		System.out.println("Output = " + nodeList.item(x-1).getNodeName());
+	    		// System.out.println("Output = " + nodeList.item(x-1).getNodeName());
 	    	}
 	    }
-		 // try{
-		 //    if(firstNode.getNodeType() == Node.ELEMENT_NODE)
-		 //    System.out.println("Node type " + firstNode.getNodeType());}catch(Exception e){
-		 //    	System.out.println("A");  //EXCEPTION HERE. NULLPOINT WHAT THE FUCK
-		 //    }
-	    if (firstNode.hasAttributes()){
-	    	System.out.println(node.getNodeName() + "'s CHILD HAS ATTRIBUTES");
-	    	String attribute = routes[r+1];
-	    	for (int i = 1; i < nodeList.getLength(); i=i+2) {
 
-	        	Node currentNode = nodeList.item(i);
-				if (currentNode.getAttributes().getNamedItem("id").getNodeValue().equals(attribute)){
-					getData(currentNode, routes, r+2);
-	    			return;
+			// try{
+			//    if(firstNode.getNodeType() == Node.ELEMENT_NODE)
+			//    System.out.println("Node type " + firstNode.getNodeType());}catch(Exception e){
+			//    	System.out.println("A");  //EXCEPTION HERE. NULLPOINT WHAT THE FUCK
+			//    }
+
+	    // Check if first node has attributes
+	    if (firstNode.hasAttributes()) {
+	    	// System.out.println(node.getNodeName() + "'s CHILD HAS ATTRIBUTES");
+
+	    	// Get attribute to look for
+	    	String attribute = routes[r+1];
+	    	System.out.println("Searching for attribute " + attribute);
+
+	    	// Find child which has matching attribute
+	    	for (int i = 1; i < nodeList.getLength(); i=i+2) {
+	        Node currentNode = nodeList.item(i);
+
+					if (currentNode.getAttributes().getNamedItem("id").getNodeValue().equals(attribute)){
+						return getData(currentNode, routes, r+2);
 	    		}
 	   		 }
 
-	    }else{ //if no attribute
-	    	System.out.println(node.getNodeName() + "' CHILD HAS NO ATTRIBUTES");
+	    } else { //if no attribute
+	    	// System.out.println(node.getNodeName() + "' CHILD HAS NO ATTRIBUTES");
+
 	    	String tag = routes[r];
-	    	System.out.println("TAG = "+ tag);
+	    	// System.out.println("TAG = "+ tag);
+
 	    	Node currentNode;
 	    	for (int i = 0; i<nodeList.getLength(); i++){
 	    		currentNode = nodeList.item(i);
 	    		if (currentNode.getNodeName().equals(tag)){
-	    			getData(currentNode, routes, ++r);
-	    			return;
+	    			return getData(currentNode, routes, ++r);
 	    		}
 
 	    	}
-	    	
 	    	throw new FileNotFoundException();
-	    	
-	    }
 
+	    }
     }
-}
+    return null;
+	}
 
 	/**
 	 * This is where the action occurs
@@ -271,18 +256,14 @@ final class HttpRequest implements Runnable {
 			//xmlDOM.getDocumentElement().normalize();
 			String[] stringRoutes = new String[routes.size()];
 			stringRoutes = routes.toArray(stringRoutes);
-			getData(xmlDOM.getDocumentElement(), stringRoutes, 2);
+			Node node = getData(xmlDOM.getDocumentElement(), stringRoutes, 2);
+			System.out.println(node.getTextContent());
 
-		}catch(Exception e){
-			//handle xml not found!
+		} catch (Exception e) {
+			// handle xml not found!
 			System.out.println(e);
 		}
 
-
-
-		//System.out.println(routes.get(1));
-		//System.out.println(routes.get(2));
-		//System.out.println(routes.get(3));
 		System.out.println();
 
 		// // Print the Request Method and Path
