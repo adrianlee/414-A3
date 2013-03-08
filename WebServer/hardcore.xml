@@ -1,9 +1,9 @@
 <level1>
 	<level2>
 		<level3 id="111">
-			<detail1> WHO LET THE DOGS OUT </detail1>
-			<detail2> WHO  </detail2>
-			<detail3> WHO WHO </detail3>
+			<detail1 id="buzz"> WHO LET THE DOGS OUT </detail1>
+			<detail2 id="light"> WHO  </detail2>
+			<detail3 id="year"> WHO WHO </detail3>
 			<detail4 id="dongs">
 				<kiki>say what?</kiki>
 				<mozilla> firefox </mozilla>
@@ -12,10 +12,10 @@
 				</chrome>	 
 			</detail4> 
 		</level3> 
-		<altlevel3>
+		<level3 id="222">
 			<how>
 				<why id="when"> who </why>
 			</how>
-		</altlevel3>
+		</level3>
 	</level2>
 </level1>
