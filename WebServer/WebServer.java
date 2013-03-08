@@ -249,15 +249,22 @@ final class HttpRequest implements Runnable {
 			}
 		}
 
-		Document xmlDOM = null;
+		// // Print the Request Method and Path
+		System.out.println("METHOD: " + requestMethod);
+		System.out.println("PATH: " + requestPath);
+		System.out.println("QUERY: " + requestQuery);
+		System.out.println();
 
+		Document xmlDOM = null;
+		Node node = null;
+
+		System.out.println("getData() output: ");
 		try{
 			xmlDOM = (Document)doms.get(routes.get(0));
 			//xmlDOM.getDocumentElement().normalize();
 			String[] stringRoutes = new String[routes.size()];
 			stringRoutes = routes.toArray(stringRoutes);
-			Node node = getData(xmlDOM.getDocumentElement(), stringRoutes, 2);
-			System.out.println(node.getTextContent());
+			node = getData(xmlDOM.getDocumentElement(), stringRoutes, 2);
 
 		} catch (Exception e) {
 			// handle xml not found!
@@ -266,11 +273,16 @@ final class HttpRequest implements Runnable {
 
 		System.out.println();
 
-		// // Print the Request Method and Path
-		System.out.println("METHOD: " + requestMethod);
-		System.out.println("PATH: " + requestPath);
-		System.out.println("QUERY: " + requestQuery);
+
+		System.out.println("getData() returned: ");
+		if (node != null) {
+			System.out.println(node.getTextContent());
+		} else {
+			System.out.println("null");
+		}
+
 		System.out.println();
+
 
 
 		// Construct the response message header
