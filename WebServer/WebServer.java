@@ -214,18 +214,7 @@ final class HttpRequest implements Runnable {
 
 
 		System.out.println("getData() returned: ");
-		if (obj != null) {
-			if (obj instanceof Node) {
-				System.out.println("Node");
-				System.out.println(((Node)obj).getTextContent());
-			} else if (obj instanceof NodeList) {
-				System.out.println("NodeList");
-				System.out.println(((NodeList)obj).item(0).getAttributes().getNamedItem("id").getNodeValue());
-			}
-
-		} else {
-			System.out.println("null");
-		}
+		
 
 		System.out.println();
 
@@ -245,6 +234,18 @@ final class HttpRequest implements Runnable {
 			// GET
 			case "GET":
 				System.out.println("get");
+				if (obj != null) {
+					if (obj instanceof Node) {
+						outToClient.writeBytes("Node");
+						outToClient.writeBytes(((Node)obj).getTextContent());
+					} else if (obj instanceof NodeList) {
+						outToClient.writeBytes("NodeList");
+						outToClient.writeBytes(((NodeList)obj).item(0).getAttributes().getNamedItem("id").getNodeValue());
+					}
+
+					} else {
+						System.out.println("null");
+					}
 				break;
 
 			// CREATE BUT NOT UPDATE AN EXISTING ONE
