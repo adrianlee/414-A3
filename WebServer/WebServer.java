@@ -127,9 +127,12 @@ final class HttpRequest implements Runnable {
 		}
 	}
 
-	private Node getData(Node node, String[] routes, int r) throws FileNotFoundException{
+	private Object getData(Node node, String[] routes, int r) throws FileNotFoundException{
     // Print root node
-    System.out.println(node.getNodeName());
+    System.out.print(node.getNodeName());
+    System.out.print("(");
+    System.out.print(r + "/" + routes.length);
+    System.out.println(")");
 
     // Make node list of children
     NodeList nodeList = node.getChildNodes();
@@ -256,6 +259,7 @@ final class HttpRequest implements Runnable {
 		System.out.println();
 
 		Document xmlDOM = null;
+		Object obj = null;
 		Node node = null;
 
 		System.out.println("getData() output: ");
@@ -264,7 +268,7 @@ final class HttpRequest implements Runnable {
 			//xmlDOM.getDocumentElement().normalize();
 			String[] stringRoutes = new String[routes.size()];
 			stringRoutes = routes.toArray(stringRoutes);
-			node = getData(xmlDOM.getDocumentElement(), stringRoutes, 2);
+			obj = getData(xmlDOM.getDocumentElement(), stringRoutes, 2);
 
 		} catch (Exception e) {
 			// handle xml not found!
@@ -275,8 +279,15 @@ final class HttpRequest implements Runnable {
 
 
 		System.out.println("getData() returned: ");
-		if (node != null) {
-			System.out.println(node.getTextContent());
+		if (obj != null) {
+			if (obj instanceof Node) {
+				System.out.println("Node");
+				System.out.println(((Node)obj).getTextContent());
+			} else if (obj instanceof NodeList) {
+				System.out.println("NodeList");
+				System.out.println(((NodeList)obj).item(0).getAttributes().getNamedItem("id").getNodeValue());
+			}
+
 		} else {
 			System.out.println("null");
 		}
