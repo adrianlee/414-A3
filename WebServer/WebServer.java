@@ -159,43 +159,56 @@ final class HttpRequest implements Runnable {
     // do something with the current node instead of System.out
     System.out.println(node.getNodeName());
     NodeList nodeList = node.getChildNodes();
-	Node firstNode = nodeList.item(1);
-    for (int x = 0; x<nodeList.getLength(); x++){
-    	System.out.println("Node Name: " + nodeList.item(x).getNodeName());
+	if(nodeList.getLength() == 1){
+		System.out.println("OUTPUT = " + nodeList.item(0));
+		return;
+	}	else{
+		Node firstNode = nodeList.item(1);
+		
+	    for (int x = 0; x<nodeList.getLength(); x++){
+	    	try{
+	    		System.out.println("Node Name: " + nodeList.item(x).getNodeName());
+	    	} catch (Exception e){
+	    		//We have reached text
+	    		System.out.println("Output = " + nodeList.item(x-1).getNodeName());
+	    	}
+	    }
+		 // try{
+		 //    if(firstNode.getNodeType() == Node.ELEMENT_NODE)
+		 //    System.out.println("Node type " + firstNode.getNodeType());}catch(Exception e){
+		 //    	System.out.println("A");  //EXCEPTION HERE. NULLPOINT WHAT THE FUCK
+		 //    }
+	    if (firstNode.hasAttributes()){
+	    	System.out.println(node.getNodeName() + "'s CHILD HAS ATTRIBUTES");
+	    	String attribute = routes[r+1];
+	    	for (int i = 1; i < nodeList.getLength(); i=i+2) {
+
+	        	Node currentNode = nodeList.item(i);
+				if (currentNode.getAttributes().getNamedItem("id").getNodeValue().equals(attribute)){
+					getData(currentNode, routes, r+2);
+	    			return;
+	    		}
+	   		 }
+
+	    }else{ //if no attribute
+	    	System.out.println(node.getNodeName() + "' CHILD HAS NO ATTRIBUTES");
+	    	String tag = routes[r];
+	    	System.out.println("TAG = "+ tag);
+	    	Node currentNode;
+	    	for (int i = 0; i<nodeList.getLength(); i++){
+	    		currentNode = nodeList.item(i);
+	    		if (currentNode.getNodeName().equals(tag)){
+	    			getData(currentNode, routes, ++r);
+	    			return;
+	    		}
+
+	    	}
+	    	
+	    	throw new FileNotFoundException();
+	    	
+	    }
+
     }
-    if(firstNode.getNodeType() == Node.ELEMENT_NODE)
-    System.out.println("Node type " + firstNode.getNodeType());
-    if (nodeList.item(1).hasAttributes()){
-    	System.out.println(node.getNodeName() + "HAS ATTRIBUTES");
-    	String attribute = routes[r+1];
-    	for (int i = 1; i < nodeList.getLength(); i=i+2) {
-
-        	Node currentNode = nodeList.item(i);
-			if (currentNode.getAttributes().getNamedItem("id").getNodeValue().equals(attribute)){
-				getData(currentNode, routes, r+2);
-    			return;
-    		}
-   		 }
-
-    }else{ //if no attribute
-    	System.out.println(node.getNodeName() + "HAS NO ATTRIBUTES");
-    	String tag = routes[r];
-    	System.out.println("TAG = "+ tag);
-    	Node currentNode;
-    	for (int i = 0; i<nodeList.getLength(); i++){
-    		currentNode = nodeList.item(i);
-    		if (currentNode.getNodeName().equals(tag)){
-    			getData(currentNode, routes, ++r);
-    			return;
-    		}
-
-    	}
-    	
-    	throw new FileNotFoundException();
-    	
-    }
-
-    
 }
 
 	/**
