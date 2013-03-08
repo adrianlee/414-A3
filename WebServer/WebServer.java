@@ -166,6 +166,7 @@ final class HttpRequest implements Runnable {
 	    	// System.out.println(node.getNodeName() + "'s CHILD HAS ATTRIBUTES");
 
 	    	if ((r+1) == routes.length) {
+	    		System.out.println("NodeList returned");
 	    		return nodeList;
 	    	}
 
@@ -287,10 +288,21 @@ final class HttpRequest implements Runnable {
 			if (obj instanceof Node) {
 				System.out.println("Node");
 				System.out.println(((Node)obj).getTextContent());
-			} else if (obj instanceof NodeList) {
-				System.out.println("NodeList");
-				System.out.println(((NodeList)obj).item(0).getAttributes().getNamedItem("id").getNodeValue());
 			}
+
+			((Node)obj).setNodeValue("asdf");
+
+
+			System.out.println(((Document)doms.get("customers")).getDocumentElement().getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(9).getChildNodes().item(3).getTextContent());
+
+			// if ( > 1) {
+			// System.out.println(((NodeList)obj).item(0));
+			// }
+
+			// if (obj instanceof NodeList) {
+			// 	System.out.println("NodeList");
+			// 	System.out.println(((NodeList)obj).item(0).getAttributes().getNamedItem("id").getNodeValue());
+			// }
 
 		} else {
 			System.out.println("null");
