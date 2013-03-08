@@ -5,8 +5,8 @@
 			<detail2 id="light"> WHO  </detail2>
 			<detail3 id="year"> WHO WHO </detail3>
 			<detail4 id="dongs">
-				<kiki>say what?</kiki>
-				<mozilla> firefox </mozilla>
+				<kiki id="meeting">say what?</kiki>
+				<mozilla "shittybrowser"> firefox </mozilla>
 				<chrome id="browser">
 					<make> google </make>
 				</chrome>	 
