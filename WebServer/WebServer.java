@@ -146,21 +146,7 @@ final class HttpRequest implements Runnable {
 
 			Node firstNode = nodeList.item(1);
 
-	    for (int x = 0; x<nodeList.getLength(); x++) {
-	    	try{
-	    		// System.out.println("Node Name: " + nodeList.item(x).getNodeName());
-	    	} catch (Exception e) {
-	    		//We have reached text
-	    		// System.out.println("Output = " + nodeList.item(x-1).getNodeName());
-	    	}
-	    }
-
-			// try{
-			//    if(firstNode.getNodeType() == Node.ELEMENT_NODE)
-			//    System.out.println("Node type " + firstNode.getNodeType());}catch(Exception e){
-			//    	System.out.println("A");  //EXCEPTION HERE. NULLPOINT WHAT THE FUCK
-			//    }
-
+	    
 	    // Check if first node has attributes
 	    if (firstNode.hasAttributes()) {
 	    	// System.out.println(node.getNodeName() + "'s CHILD HAS ATTRIBUTES");
