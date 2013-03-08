@@ -1,16 +1,16 @@
 <level1>
 	<level2>
 		<level3 id="111">
-			<detail1 id="buzz"> WHO LET THE DOGS OUT </detail1>
-			<detail2 id="light"> WHO  </detail2>
-			<detail3 id="year"> WHO WHO </detail3>
-			<detail4 id="dongs">
+			<detail id="buzz"> WHO LET THE DOGS OUT </detail>
+			<detail id="light"> WHO  </detail>
+			<detail id="year"> WHO WHO </detail>
+			<detail id="dongs">
 				<kiki id="meeting">say what?</kiki>
 				<mozilla id="shittybrowser"> firefox </mozilla>
 				<chrome id="browser">
 					<make> google </make>
 				</chrome>	 
-			</detail4> 
+			</detail> 
 		</level3> 
 		<level3 id="222">
 			<how>
