@@ -160,7 +160,7 @@ final class HttpRequest implements Runnable {
     System.out.println(node.getNodeName());
     NodeList nodeList = node.getChildNodes();
 	if(nodeList.getLength() == 1){
-		System.out.println("OUTPUT = " + nodeList.item(0));
+		System.out.println("OUTPUT = " + nodeList.item(0).getTextContent());
 		return;
 	}	else{
 		Node firstNode = nodeList.item(1);
