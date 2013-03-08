@@ -199,7 +199,11 @@ final class HttpRequest implements Runnable {
 			String[] stringRoutes = new String[routes.size()];
 			stringRoutes = routes.toArray(stringRoutes);
 			ResourceManager rmgmt = new ResourceManager();
-			obj = rmgmt.getData(xmlDOM.getDocumentElement(), stringRoutes, 2);
+			try{
+				obj = rmgmt.getData(xmlDOM.getDocumentElement(), stringRoutes, 2);
+			}catch(Exception e){
+				obj = rmgmt.getData(xmlDOM.getDocumentElement(), stringRoutes, 1);
+			}
 
 		} catch (Exception e) {
 			// handle xml not found!

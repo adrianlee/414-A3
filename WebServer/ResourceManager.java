@@ -56,7 +56,9 @@ public class ResourceManager{
 
 		    } else { //if no attribute
 		    	// System.out.println(node.getNodeName() + "' CHILD HAS NO ATTRIBUTES");
-
+		    	if ((r+1) == routes.length) {
+		    		return nodeList;
+		    	}
 		    	String tag = routes[r];
 		    	// System.out.println("TAG = "+ tag);
 
