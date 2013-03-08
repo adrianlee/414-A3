@@ -165,6 +165,10 @@ final class HttpRequest implements Runnable {
 	    if (firstNode.hasAttributes()) {
 	    	// System.out.println(node.getNodeName() + "'s CHILD HAS ATTRIBUTES");
 
+	    	if ((r+1) == routes.length) {
+	    		return nodeList;
+	    	}
+
 	    	// Get attribute to look for
 	    	String attribute = routes[r+1];
 	    	System.out.println("Searching for attribute " + attribute);
