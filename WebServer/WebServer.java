@@ -168,6 +168,17 @@ final class HttpRequest implements Runnable {
  //    return null;
 	// }
 
+	public String getFirstLevelTextContent(Node node) {
+    NodeList list = node.getChildNodes();
+    StringBuilder textContent = new StringBuilder();
+    for (int i = 0; i < list.getLength(); ++i) {
+        Node child = list.item(i);
+        if (child.getNodeType() == Node.TEXT_NODE)
+            textContent.append(child.getTextContent().trim());
+    }
+    return textContent.toString();
+	}
+
 	/**
 	 * This is where the action occurs
 	 * @throws Exception
@@ -261,11 +272,7 @@ final class HttpRequest implements Runnable {
 			System.out.println(((MyNode)obj).getNode().getTextContent());
 
 			Node node = ((MyNode)obj).getNode();
-			for (int i = 0; i < node.getChildNodes().getLength(); i=i+2) {
-				if (node.getChildNodes().item(i).getNodeValue().trim() != "") {
-					System.out.println(node.getChildNodes().item(i).getNodeValue().trim());
-				}
-			}
+			System.out.println(getFirstLevelTextContent(node));
 		} else {
 			System.out.println("object is a list");
 			NodeList list = ((MyNode)obj).getList();
