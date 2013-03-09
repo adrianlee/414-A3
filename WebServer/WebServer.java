@@ -282,9 +282,10 @@ final class HttpRequest implements Runnable {
 
 			// CREATE AND UPDATE
 			case "PUT": //A PUT request is used to CREATE and UPDATE a resource
+				Object lastNodeInRoute;
 				try{
 					System.out.println("testing if " + lastRoute + " is already in");
-					Object dummy = resourceManager.getData(xmlDOM.getDocumentElement(), stringRoutes, 2);
+					lastNodeInRoute = resourceManager.getData(xmlDOM.getDocumentElement(), stringRoutes, 2);
 				}catch(Exception e){
 					System.out.println(lastRoute + " not here, creating");
 					Element tagCreate = xmlDOM.createElement(lastRoute);
@@ -296,6 +297,7 @@ final class HttpRequest implements Runnable {
 				System.out.println(lastRoute + " is already there so updating it");
 				Element tagCreate = xmlDOM.createElement(lastRoute);
 				tagCreate.appendChild(xmlDOM.createTextNode(requestQuery));
+				((MyNode)obj).getNode().removeChild(((MyNode)lastNodeInRoute).getNode());
 				((MyNode)obj).getNode().appendChild(tagCreate);
 				break;
 
