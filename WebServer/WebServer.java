@@ -114,7 +114,7 @@ final class HttpRequest implements Runnable {
 	public String getEnumeratedList(NodeList list) {
 		String output = "";
 		for (int i = 1; i < list.getLength(); i=i+2) {
-			output += list.item(i).getAttributes().getNamedItem("id").getNodeValue() + "\n";
+			output += list.item(i).getAttributes().getNamedItem("id").getNodeValue() + CRLF;
 		}
 		return output;
 	}
@@ -135,6 +135,9 @@ final class HttpRequest implements Runnable {
 		// Set up input stream filters
 		BufferedReader inFromClient = new BufferedReader(new InputStreamReader(is));
 		DataOutputStream outToClient = new DataOutputStream(os);
+
+		int responseCode = 500;
+		String responseBody = "";
 
 		// Get the request line of the HTTP request message
 		String requestLine = inFromClient.readLine();
@@ -210,7 +213,6 @@ final class HttpRequest implements Runnable {
 
 		System.out.println();
 
-
 		System.out.println("getData() returned: ");
 
 		Node node = null;
@@ -233,32 +235,25 @@ final class HttpRequest implements Runnable {
 		}
 		System.out.println();
 
-		// Construct the response message header
-		String statusLine = null;
-		String contentTypeLine = null;
-
-		// statusLine = "HTTP/1.0 200 OK" + CRLF;
-		// contentTypeLine = "Content-type: " + contentType(requestPath) + CRLF;
-
-		statusLine = "HTTP/1.0 404 Not Found" + CRLF;
-		contentTypeLine = "Content-type: text/html" + CRLF;
-
 		switch (requestMethod) {
 			// GET
 			case "GET":
 				System.out.println("get");
 				if (obj != null) {
 					if (resourceManager.isNode(obj)) {
-						outToClient.writeBytes("Node \n");
-						outToClient.writeBytes(getFirstLevelTextContent(node));
+						responseBody += "Node" + CRLF;
+						responseBody += getFirstLevelTextContent(node);
 					} else {
-						outToClient.writeBytes("NodeList \n");
-						outToClient.writeBytes(getEnumeratedList(list));
+						responseBody += "NodeList" + CRLF;
+						responseBody += getEnumeratedList(list);
 					}
-
-					} else {
-						System.out.println("null");
-					}
+					responseCode = 200;
+					// OK
+				} else {
+					System.out.println("null");
+					// Not found
+					responseCode = 404;
+				}
 
 				break;
 
@@ -273,10 +268,12 @@ final class HttpRequest implements Runnable {
 						tagCreate.setNodeValue(requestQuery);
 						((MyNode)obj).getNode().appendChild(tagCreate);
 					}else{
-						//HTTP 405
+						// Method not allowed
+						responseCode = 405;
 					}
 				}else{
-					////HTTP 405
+					// Method not allowed
+					responseCode = 405;
 				}
 				break;
 
@@ -304,19 +301,19 @@ final class HttpRequest implements Runnable {
 
 			// DEFAULT
 			default:
-				System.out.println("unrecognized method");
-				// return 501 Not Implemented
+				System.out.println("Not Implemented");
+				// Not Implemented
+				responseCode = 501;
 				break;
 		}
 
-		// Send the status line and our header (which only contains the content-type line)
-		outToClient.writeBytes(statusLine);
+		// Construct the response message header
+		outToClient.writeBytes(setStatusLine(responseCode));
 		outToClient.writeBytes(setContentType());
 		outToClient.writeBytes(CRLF);
 
 		// Send the body of the message (the web object)
-		// sendBytes(fis, outToClient);
-		// outToClient.writeBytes("hello");
+		outToClient.writeBytes(responseBody);
 
 		// Close the streams and sockets
 		os.close();
@@ -359,7 +356,7 @@ final class HttpRequest implements Runnable {
 	}
 
 	private String setContentType() {
-		return "text/html";
+		return "Content-type: text/html" + CRLF;
 	}
 
 	/**

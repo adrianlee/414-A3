@@ -104,8 +104,12 @@ public class ResourceManager{
 
 	    	// If last route. Enumerate collection.
 	    	if ((r+1) == routes.length) {
+	    		if (nodeList.item(1).getNodeName().equals(routes[r])) {
 	    		System.out.println("List returned");
-	    		return new MyNode("list", nodeList);
+	    			return new MyNode("list", nodeList);
+	    		} else {
+	    			return null;
+	    		}
 	    	}
 
 	    	// Get attribute to look for
