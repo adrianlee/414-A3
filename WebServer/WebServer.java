@@ -194,17 +194,21 @@ final class HttpRequest implements Runnable {
 
 		// Get outpu
 		System.out.println("getData() output: ");
-		String wildTag = "";
-		if(requestMethod.equals("PUT") || requestMethod.equals("POST") || requestMethod.equals("DELETE") ){
-			wildTag = routes.get(routes.size() - 1);
-			routes.remove(routes.size() - 1 );
-		}
+		String lastRoute = routes.get(routes.size() - 1);
+		
 
 		String[] stringRoutes = new String[routes.size()];
+		String[] routesWOchild = new String[stringRoutes.length-1];
 		stringRoutes = routes.toArray(stringRoutes);
+		routes.remove(routes.size() - 1 );
+		routesWOchild = routes.toArray(routesWOchild);
 
 		try{
-			obj = resourceManager.getData(xmlDOM.getDocumentElement(), stringRoutes, 2);
+			if(requestMethod.equals("PUT") || requestMethod.equals("POST") || requestMethod.equals("DELETE") ){
+				obj = resourceManager.getData(xmlDOM.getDocumentElement(), routesWOchild, 2);
+			}else{
+				obj = resourceManager.getData(xmlDOM.getDocumentElement(), stringRoutes, 2);
+			}
 		} catch (Exception e) {
 			// handle xml not found!
 			System.out.println("Something went wrong with getData()");
@@ -260,28 +264,27 @@ final class HttpRequest implements Runnable {
 			// CREATE BUT NOT UPDATE AN EXISTING ONE
 			case "POST":
 				System.out.println("post");
-				if(obj == null){ // CREATE
-					System.out.println("need to create" + wildTag );
-					if(resourceManager.isNode(obj)){
-						Element tagCreate = xmlDOM.createElement(wildTag);
-						//tagCreate.appendChild(xmlDOM.createTextNode(requestQuery));
-						tagCreate.setNodeValue(requestQuery);
-						((MyNode)obj).getNode().appendChild(tagCreate);
-					}else{
-						// Method not allowed
-						responseCode = 405;
-					}
-				}else{
-					// Method not allowed
-					responseCode = 405;
+
+				//check if tag already exists
+				try{
+					System.out.println("testing if " + lastRoute + " is already there");
+					Object dummy = resourceManager.getData(xmlDOM.getDocumentElement(), routesWOchild, 2);
+				}catch(Exception e){
+					System.out.println(lastRoute + " not here, creating");
+					Element tagCreate = xmlDOM.createElement(lastRoute);
+					tagCreate.setNodeValue(requestQuery);
+					((MyNode)obj).getNode().appendChild(tagCreate);
+
 				}
+				//if this is reached, then the tag existed and thats not permitted, so send error
+				System.out.println(lastRoute + " is already there");
 				break;
 
 			// CREATE AND UPDATE
 			case "PUT": //A PUT request is used to CREATE and UPDATE a resource
 				System.out.println("put");
 				if(obj == null  && resourceManager.isNode(obj)){ // CREATE
-					Element tagCreate = xmlDOM.createElement(wildTag);
+					Element tagCreate = xmlDOM.createElement(lastRoute);
 					//tagCreate.appendChild(xmlDOM.createTextNode(requestQuery));
 					tagCreate.setNodeValue(requestQuery);
 					((MyNode)obj).getNode().appendChild(tagCreate);
@@ -320,6 +323,7 @@ final class HttpRequest implements Runnable {
 		inFromClient.close();
 		socket.close();
 	}
+
 
 	private String setStatusLine(int code) {
 		String output;
