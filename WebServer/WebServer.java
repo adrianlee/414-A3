@@ -97,7 +97,7 @@ final class HttpRequest implements Runnable {
 		}
 	}
 
-		
+
 
 	public String getFirstLevelTextContent(Node node) {
     NodeList list = node.getChildNodes();
@@ -193,7 +193,7 @@ final class HttpRequest implements Runnable {
 		System.out.println("getData() output: ");
 		String[] stringRoutes = new String[routes.size()];
 		try{
-			
+
 			stringRoutes = routes.toArray(stringRoutes);
 
 			obj = resourceManager.getData(xmlDOM.getDocumentElement(), stringRoutes, 2);
@@ -223,32 +223,12 @@ final class HttpRequest implements Runnable {
 		}
 
 		if (obj != null) {
-			// if (obj instanceof Node) {
-			// 	System.out.println("Node");
-			// 	System.out.println(((Node)obj).getTextContent());
-			// }
-
-			// ((Node)obj).setNodeValue("asdf");
-
-
-			// System.out.println((resourceManager.getDom("customers")).getDocumentElement().getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(9).getChildNodes().item(3).getTextContent());
-
-			// if ( > 1) {
-			// System.out.println(((NodeList)obj).item(0));
-			// }
-
-			// if (obj instanceof NodeList) {
-			// 	System.out.println("NodeList");
-			// 	System.out.println(((NodeList)obj).item(0).getAttributes().getNamedItem("id").getNodeValue());
-			// }
 
 		} else {
 			System.out.println("null");
 		}
 
 		System.out.println();
-
-
 
 		// Construct the response message header
 		String statusLine = null;
@@ -280,7 +260,7 @@ final class HttpRequest implements Runnable {
 				break;
 
 			// CREATE BUT NOT UPDATE AN EXISTING ONE
-			case "POST": 
+			case "POST":
 				System.out.println("post");
 				if(obj == null){ // CREATE
 					if(resourceManager.isNode(obj)){
@@ -324,19 +304,10 @@ final class HttpRequest implements Runnable {
 				break;
 		}
 
-		// statusLine = "HTTP/1.0 200 OK" + CRLF;
-		// statusLine = "HTTP/1.0 201 Created" + CRLF;	// creation
-		// statusLine = "HTTP/1.0 202 Accepted" + CRLF;	// update
-		// statusLine = "HTTP/1.0 400 Bad Request" + CRLF;	// bad formed request
-		// statusLine = "HTTP/1.0 404 Not Found" + CRLF;
-		// statusLine = "HTTP/1.0 405 Method Not Allowed" + CRLF;
-		// statusLine = "HTTP/1.0 500 Server Error" + CRLF;
-		// statusLine = "HTTP/1.0 501 Not Implemented" + CRLF;
-
 		// Send the status line and our header (which only contains the content-type line)
-		//outToClient.writeBytes(statusLine);
-		//outToClient.writeBytes(contentTypeLine);
-		//outToClient.writeBytes(CRLF);
+		outToClient.writeBytes(statusLine);
+		outToClient.writeBytes(setContentType());
+		outToClient.writeBytes(CRLF);
 
 		// Send the body of the message (the web object)
 		// sendBytes(fis, outToClient);
@@ -348,22 +319,42 @@ final class HttpRequest implements Runnable {
 		socket.close();
 	}
 
-	/**
-	 * Private method that returns the appropriate MIME-type string based on the suffix of the appended file
-	 * @param fileName
-	 * @return
-	 */
-	private static String contentType(String fileName) {
-		if (fileName.endsWith(".htm") || fileName.endsWith(".html")) {
-			return "text/html";
+	private String setStatusLine(int code) {
+		String output;
+		switch (code) {
+			case 200:
+				output = "HTTP/1.0 200 OK" + CRLF;
+				break;
+			case 201:
+				output = "HTTP/1.0 201 Created" + CRLF;	// creation
+				break;
+			case 202:
+				output = "HTTP/1.0 202 Accepted" + CRLF;	// update
+				break;
+			case 400:
+				output = "HTTP/1.0 400 Bad Request" + CRLF;	// bad formed request
+				break;
+			case 404:
+				output = "HTTP/1.0 404 Not Found" + CRLF;
+				break;
+			case 405:
+				output = "HTTP/1.0 405 Method Not Allowed" + CRLF;
+				break;
+			case 500:
+				output = "HTTP/1.0 500 Server Error" + CRLF;
+				break;
+			case 501:
+				output = "HTTP/1.0 501 Not Implemented" + CRLF;
+				break;
+			default:
+				output = "HTTP/1.0 500 Server Error" + CRLF;
+				// 500
 		}
-		if (fileName.endsWith(".gif")) {
-			return "image/gif";
-		}
-		if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) {
-			return "image/jpeg";
-		}
-		return "application/octet-stream";
+		return output;
+	}
+
+	private String setContentType() {
+		return "text/html";
 	}
 
 	/**
