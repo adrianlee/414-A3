@@ -308,6 +308,12 @@ final class HttpRequest implements Runnable {
           ((MyNode)obj).getNode().removeChild(((MyNode)lastNodeInRoute).getNode());
           ((MyNode)obj).getNode().appendChild(tagCreate);
         }
+
+        // EXAMPLE FAILURE FOR PUT
+        // http://localhost:6789/customers/Database/Customers/Customer/GREAL/FullAddress
+        // http://localhost:6789/customers/Database/Customers/Customer/GREAL/FullAddress/City    --- without query
+
+
         responseCode = 202;
         break;
 
