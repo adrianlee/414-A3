@@ -216,7 +216,7 @@ final class HttpRequest implements Runnable {
 			}
 		}
 
-		// // Print the Request Method and Path
+		// Print the Request Method and Path
 		System.out.println("METHOD: " + requestMethod);
 		System.out.println("PATH: " + requestPath);
 		System.out.println("QUERY: " + requestQuery);
@@ -226,16 +226,25 @@ final class HttpRequest implements Runnable {
 		Object obj = null;
 		Node node = null;
 
-		System.out.println("getData() output: ");
+
+		// Retrieve document specified by route(0)
 		try{
 			xmlDOM = resourceManager.getDom(routes.get(0));
-			//xmlDOM.getDocumentElement().normalize();
+		} catch (Exception e) {
+			// FileNotFoundException
+			System.out.println(e);
+		}
+
+		// Get outpu
+		System.out.println("getData() output: ");
+		try{
 			String[] stringRoutes = new String[routes.size()];
 			stringRoutes = routes.toArray(stringRoutes);
-			obj = resourceManager.getData(xmlDOM.getDocumentElement(), stringRoutes, 2);
 
+			obj = resourceManager.getData(xmlDOM.getDocumentElement(), stringRoutes, 2);
 		} catch (Exception e) {
 			// handle xml not found!
+			System.out.println("Something went wrong with getData()");
 			System.out.println(e);
 		}
 
@@ -243,6 +252,13 @@ final class HttpRequest implements Runnable {
 
 
 		System.out.println("getData() returned: ");
+
+		if (resourceManager.isNode(obj)) {
+			System.out.println("object is a node");
+		} else {
+			System.out.println("object is a list");
+		}
+
 		if (obj != null) {
 			// if (obj instanceof Node) {
 			// 	System.out.println("Node");

@@ -11,12 +11,16 @@ public class ResourceManager{
 	String[] routes;
 	Hashtable<String,Document> doms;
 
-	public ResourceManager(File path){
+	public ResourceManager(File path) {
 		doms = buildTable(path);
 	}
 
-	public Document getDom(String filename) {
-		return (Document)doms.get(filename);
+	public Document getDom(String filename) throws FileNotFoundException {
+		Object obj = doms.get(filename);
+		if (obj == null) {
+			throw new FileNotFoundException();
+		}
+		return (Document)obj;
 	}
 
 	private File[] getXMLfiles(File path){
@@ -39,7 +43,7 @@ public class ResourceManager{
 		return xmlFiles;
 	}
 
-	private Hashtable<String,Document> buildTable(File path){
+	private Hashtable<String,Document> buildTable(File path) {
 		File[] xmlFiles = getXMLfiles(path);
 
     try {
@@ -51,71 +55,90 @@ public class ResourceManager{
 				// doms[i] = dBuilder.parse(xmlFiles[i]);
 			}
 			return doms;
-		} catch(Exception e){
+		} catch(Exception e) {
+			System.out.println("Unable to build table of files.");
 			return null;
 		}
 	}
 
-	public Object getData(Node node, String[] routes, int r) throws FileNotFoundException{
+	public boolean isNode(Object obj) {
+		// if (((NodeList)obj).item(0).getTextContent() == "") {
+		// 	return false;
+		// }
+		MyNode node = (MyNode)obj;
+
+		if (node.name == "node") {
+			return true;
+		}
+
+		// System.out.println(obj.getClass().getName());
+
+		// System.out.println(((Node)obj).getNodeName());
+
+
+		// System.out.println(((Node)obj).getTextContent());
+		// System.out.println(((NodeList)obj).getLength());
+		// System.out.println(((NodeList)obj).item(0).getTextContent());
+		return false;
+	}
+
+	public MyNode getData(Node node, String[] routes, int r) throws FileNotFoundException{
 	    // Print root node
 	    System.out.print(node.getNodeName());
 	    System.out.print("(");
 	    System.out.print(r + "/" + routes.length);
 	    System.out.println(")");
 
+	    if (r >= routes.length) {
+	    	System.out.println("overflow");
+	    	return new MyNode("node", node);
+	    }
+
 	    // Make node list of children
 	    NodeList nodeList = node.getChildNodes();
 
-	    // Check if single node.
-			if (nodeList.getLength() == 1) {
-				// System.out.println("OUTPUT = " + nodeList.item(0).getTextContent());
-				return nodeList.item(0);
+			Node firstNode = nodeList.item(1);
 
-			}	else {
+	    // Check if first node has attributes
+	    if (firstNode.hasAttributes()) {
 
-				Node firstNode = nodeList.item(1);
+	    	// If last route. Enumerate collection.
+	    	if ((r+1) == routes.length) {
+	    		System.out.println("List returned");
+	    		return new MyNode("list", nodeList);
+	    	}
 
+	    	// Get attribute to look for
+	    	String attribute = routes[r+1];
+	    	System.out.println("Searching for attribute " + attribute);
 
-		    // Check if first node has attributes
-		    if (firstNode.hasAttributes()) {
-		    	// System.out.println(node.getNodeName() + "'s CHILD HAS ATTRIBUTES");
+	    	// Find child which has matching attribute
+	    	for (int i = 1; i < nodeList.getLength(); i=i+2) {//increments of 2 (and only looking at odds) because the nodeList is #text Tag #text Tag etc
+	        Node currentNode = nodeList.item(i);
 
-		    	if ((r+1) == routes.length) {
-		    		return nodeList;
-		    	}
+					if (currentNode.getAttributes().getNamedItem("id").getNodeValue().equals(attribute)){
+						return getData(currentNode, routes, r+2);
+	    		}
+	   		 }
 
-		    	// Get attribute to look for
-		    	String attribute = routes[r+1];
-		    	System.out.println("Searching for attribute " + attribute);
+	    } else { //if no attribute
+	    	// System.out.println(node.getNodeName() + "' CHILD HAS NO ATTRIBUTES");
+	    	if ((r+1) == routes.length) {
+	    		System.out.println("Node returned");
+	    		return new MyNode("node", firstNode);
+	    	}
 
-		    	// Find child which has matching attribute
-		    	for (int i = 1; i < nodeList.getLength(); i=i+2) {//increments of 2 (and only looking at odds) because the nodeList is #text Tag #text Tag etc
-		        Node currentNode = nodeList.item(i);
+	    	String tag = routes[r];
 
-						if (currentNode.getAttributes().getNamedItem("id").getNodeValue().equals(attribute)){
-							return getData(currentNode, routes, r+2);
-		    		}
-		   		 }
+	    	Node currentNode;
+	    	for (int i = 0; i<nodeList.getLength(); i++){
+	    		currentNode = nodeList.item(i);
+	    		if (currentNode.getNodeName().equals(tag)){
+	    			return getData(currentNode, routes, ++r);
+	    		}
 
-		    } else { //if no attribute
-		    	// System.out.println(node.getNodeName() + "' CHILD HAS NO ATTRIBUTES");
-		    	if ((r+1) == routes.length) {
-		    		return nodeList;
-		    	}
-		    	String tag = routes[r];
-		    	// System.out.println("TAG = "+ tag);
-
-		    	Node currentNode;
-		    	for (int i = 0; i<nodeList.getLength(); i++){
-		    		currentNode = nodeList.item(i);
-		    		if (currentNode.getNodeName().equals(tag)){
-		    			return getData(currentNode, routes, ++r);
-		    		}
-
-		    	}
-		    	throw new FileNotFoundException();
-
-		    }
+	    	}
+	    	throw new FileNotFoundException();
 	    }
     return null;
 	}
