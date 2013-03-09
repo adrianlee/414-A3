@@ -301,6 +301,19 @@ final class HttpRequest implements Runnable {
 			// GET
 			case "GET":
 				System.out.println("get");
+				if (obj != null) {
+					if (resourceManager.isNode(obj)) {
+						outToClient.writeBytes("Node \n");
+						outToClient.writeBytes(((MyNode)obj).getNode().getTextContent());
+					} else  {
+						outToClient.writeBytes("NodeList \n");
+						outToClient.writeBytes(((MyNode)obj).getList().item(0).getAttributes().getNamedItem("id").getNodeValue());
+					}
+
+					} else {
+						System.out.println("null");
+					}
+
 				break;
 
 			// CREATE BUT NOT UPDATE AN EXISTING ONE
@@ -335,9 +348,9 @@ final class HttpRequest implements Runnable {
 		// statusLine = "HTTP/1.0 501 Not Implemented" + CRLF;
 
 		// Send the status line and our header (which only contains the content-type line)
-		outToClient.writeBytes(statusLine);
-		outToClient.writeBytes(contentTypeLine);
-		outToClient.writeBytes(CRLF);
+		//outToClient.writeBytes(statusLine);
+		//outToClient.writeBytes(contentTypeLine);
+		//outToClient.writeBytes(CRLF);
 
 		// Send the body of the message (the web object)
 		// sendBytes(fis, outToClient);
