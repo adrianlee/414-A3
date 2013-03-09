@@ -7,21 +7,21 @@ import javax.xml.parsers.*;
 import java.net.*;
 
 public class MyNode {
-  String name;
-  Object obj;
+    String name;
+    Object obj;
 
-  public MyNode(String name, Object obj) {
+    public MyNode(String name, Object obj) {
 
-    this.name = name;
-    this.obj = obj;
+        this.name = name;
+        this.obj = obj;
 
-  }
+    }
 
-  public Node getNode() {
-    return (Node)this.obj;
-  }
+    public Node getNode() {
+        return (Node)this.obj;
+    }
 
-  public NodeList getList() {
-    return (NodeList)this.obj;
-  }
+    public NodeList getList() {
+        return (NodeList)this.obj;
+    }
 }
