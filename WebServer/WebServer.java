@@ -241,10 +241,10 @@ final class HttpRequest implements Runnable {
 				System.out.println("get");
 				if (obj != null) {
 					if (resourceManager.isNode(obj)) {
-						responseBody += "Node" + CRLF;
+						// responseBody += "Node" + CRLF;
 						responseBody += getFirstLevelTextContent(node);
 					} else {
-						responseBody += "NodeList" + CRLF;
+						// responseBody += "NodeList" + CRLF;
 						responseBody += getEnumeratedList(list);
 					}
 					responseCode = 200;
