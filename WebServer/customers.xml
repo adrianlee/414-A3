@@ -1,10 +1,12 @@
 <Database>
 	<Customers>
 		<Customer id="GREAL">
+			OMG
 		  <CompanyName>Great Lakes Food Market</CompanyName>
 		  <ContactName>Howard Snyder</ContactName>
 		  <ContactTitle>Marketing Manager</ContactTitle>
 		  <Phone>(503) 555-7555</Phone>
+		  BOO
 		  <FullAddress>
 			<Address>2732 Baker Blvd.</Address>
 			<City>Eugene</City>

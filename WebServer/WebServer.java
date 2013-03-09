@@ -17,6 +17,11 @@ import javax.xml.parsers.*;
 import java.net.*;
 import java.io.FileNotFoundException;
 
+import static org.w3c.dom.Node.ATTRIBUTE_NODE;
+import static org.w3c.dom.Node.DOCUMENT_TYPE_NODE;
+import static org.w3c.dom.Node.ELEMENT_NODE;
+import static org.w3c.dom.Node.TEXT_NODE;
+
 /**
  * This is the main class which runs the loop that listens for incoming requests
  * and spawns new threads to handle each request.
@@ -224,8 +229,6 @@ final class HttpRequest implements Runnable {
 
 		Document xmlDOM = null;
 		Object obj = null;
-		Node node = null;
-
 
 		// Retrieve document specified by route(0)
 		try{
@@ -255,8 +258,21 @@ final class HttpRequest implements Runnable {
 
 		if (resourceManager.isNode(obj)) {
 			System.out.println("object is a node");
+			System.out.println(((MyNode)obj).getNode().getTextContent());
+
+			Node node = ((MyNode)obj).getNode();
+			for (int i = 0; i < node.getChildNodes().getLength(); i=i+2) {
+				if (node.getChildNodes().item(i).getNodeValue().trim() != "") {
+					System.out.println(node.getChildNodes().item(i).getNodeValue().trim());
+				}
+			}
 		} else {
 			System.out.println("object is a list");
+			NodeList list = ((MyNode)obj).getList();
+			System.out.println(list.getLength());
+			for (int i = 1; i < list.getLength(); i=i+2) {
+				System.out.println(list.item(i).getAttributes().getNamedItem("id").getNodeValue());
+			}
 		}
 
 		if (obj != null) {
