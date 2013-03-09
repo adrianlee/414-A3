@@ -149,7 +149,7 @@ final class HttpRequest implements Runnable {
 		String requestPath = tokens.nextToken();
 		String requestQuery = null;
 
-		URL url = new URL("http://local.dev" + requestPath);
+		URI url = new URI("http://local.dev" + requestPath);
 
 		requestPath = url.getPath();
 		requestQuery = url.getQuery();
@@ -191,8 +191,9 @@ final class HttpRequest implements Runnable {
 
 		// Get outpu
 		System.out.println("getData() output: ");
+		String[] stringRoutes = new String[routes.size()];
 		try{
-			String[] stringRoutes = new String[routes.size()];
+			
 			stringRoutes = routes.toArray(stringRoutes);
 
 			obj = resourceManager.getData(xmlDOM.getDocumentElement(), stringRoutes, 2);
@@ -279,13 +280,36 @@ final class HttpRequest implements Runnable {
 				break;
 
 			// CREATE BUT NOT UPDATE AN EXISTING ONE
-			case "POST":
+			case "POST": 
 				System.out.println("post");
+				if(obj == null){ // CREATE
+					if(resourceManager.isNode(obj)){
+						Element tagCreate = xmlDOM.createElement(stringRoutes[stringRoutes.length - 1]);
+						//tagCreate.appendChild(xmlDOM.createTextNode(requestQuery));
+						tagCreate.setNodeValue(requestQuery);
+						((MyNode)obj).getNode().appendChild(tagCreate);
+					}else{
+						//HTTP 405
+					}
+				}else{
+					////HTTP 405
+				}
 				break;
 
 			// CREATE AND UPDATE
-			case "PUT":
+			case "PUT": //A PUT request is used to CREATE and UPDATE a resource
 				System.out.println("put");
+				if(obj == null  && resourceManager.isNode(obj)){ // CREATE
+					Element tagCreate = xmlDOM.createElement(stringRoutes[stringRoutes.length - 1]);
+					//tagCreate.appendChild(xmlDOM.createTextNode(requestQuery));
+					tagCreate.setNodeValue(requestQuery);
+					((MyNode)obj).getNode().appendChild(tagCreate);
+
+				}else if( resourceManager.isNode(obj)){ //UPDATE
+					((MyNode)obj).getNode().setNodeValue(requestQuery);
+				}else{
+					//list, handle error
+				}
 				break;
 
 			// DELETE
