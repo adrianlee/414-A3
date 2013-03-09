@@ -123,10 +123,7 @@ public class ResourceManager{
 
 	    } else { //if no attribute
 	    	// System.out.println(node.getNodeName() + "' CHILD HAS NO ATTRIBUTES");
-	    	if ((r+1) == routes.length) {
-	    		System.out.println("Node returned");
-	    		return new MyNode("node", firstNode);
-	    	}
+
 
 	    	String tag = routes[r];
 
@@ -134,6 +131,10 @@ public class ResourceManager{
 	    	for (int i = 0; i<nodeList.getLength(); i++){
 	    		currentNode = nodeList.item(i);
 	    		if (currentNode.getNodeName().equals(tag)){
+	    			if ((r+1) == routes.length) {
+			    		System.out.println("Node returned");
+			    		return new MyNode("node", currentNode);
+			    	}
 	    			return getData(currentNode, routes, ++r);
 	    		}
 

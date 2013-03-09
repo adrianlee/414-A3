@@ -179,6 +179,15 @@ final class HttpRequest implements Runnable {
     return textContent.toString();
 	}
 
+
+	public String getEnumeratedList(NodeList list) {
+		String output = "";
+		for (int i = 1; i < list.getLength(); i=i+2) {
+			output += list.item(i).getAttributes().getNamedItem("id").getNodeValue() + "\n";
+		}
+		return output;
+	}
+
 	/**
 	 * This is where the action occurs
 	 * @throws Exception
@@ -267,19 +276,18 @@ final class HttpRequest implements Runnable {
 
 		System.out.println("getData() returned: ");
 
+		Node node = null;
+		NodeList list = null;
+
 		if (resourceManager.isNode(obj)) {
 			System.out.println("object is a node");
-			System.out.println(((MyNode)obj).getNode().getTextContent());
+			// System.out.println(((MyNode)obj).getNode().getTextContent());
 
-			Node node = ((MyNode)obj).getNode();
+			node = ((MyNode)obj).getNode();
 			System.out.println(getFirstLevelTextContent(node));
 		} else {
 			System.out.println("object is a list");
-			NodeList list = ((MyNode)obj).getList();
-			System.out.println(list.getLength());
-			for (int i = 1; i < list.getLength(); i=i+2) {
-				System.out.println(list.item(i).getAttributes().getNamedItem("id").getNodeValue());
-			}
+			list = ((MyNode)obj).getList();
 		}
 
 		if (obj != null) {
@@ -327,10 +335,10 @@ final class HttpRequest implements Runnable {
 				if (obj != null) {
 					if (resourceManager.isNode(obj)) {
 						outToClient.writeBytes("Node \n");
-						outToClient.writeBytes(((MyNode)obj).getNode().getTextContent());
-					} else  {
+						outToClient.writeBytes(getFirstLevelTextContent(node));
+					} else {
 						outToClient.writeBytes("NodeList \n");
-						outToClient.writeBytes(((MyNode)obj).getList().item(0).getAttributes().getNamedItem("id").getNodeValue());
+						outToClient.writeBytes(getEnumeratedList(list));
 					}
 
 					} else {
@@ -377,7 +385,7 @@ final class HttpRequest implements Runnable {
 
 		// Send the body of the message (the web object)
 		// sendBytes(fis, outToClient);
-		outToClient.writeBytes("hello");
+		// outToClient.writeBytes("hello");
 
 		// Close the streams and sockets
 		os.close();
