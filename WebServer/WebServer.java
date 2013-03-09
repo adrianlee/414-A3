@@ -267,14 +267,14 @@ final class HttpRequest implements Runnable {
 
 				//check if tag already exists
 				try{
-					System.out.println("testing if " + lastRoute + " is already there");
-					Object dummy = resourceManager.getData(xmlDOM.getDocumentElement(), routesWOchild, 2);
+					System.out.println("testing if " + lastRoute + " is already in");
+					Object dummy = resourceManager.getData(xmlDOM.getDocumentElement(), stringRoutes, 2);
 				}catch(Exception e){
 					System.out.println(lastRoute + " not here, creating");
 					Element tagCreate = xmlDOM.createElement(lastRoute);
-					tagCreate.setNodeValue(requestQuery);
+					tagCreate.appendChild(xmlDOM.createTextNode(requestQuery));
 					((MyNode)obj).getNode().appendChild(tagCreate);
-
+					break;
 				}
 				//if this is reached, then the tag existed and thats not permitted, so send error
 				System.out.println(lastRoute + " is already there");
@@ -282,18 +282,21 @@ final class HttpRequest implements Runnable {
 
 			// CREATE AND UPDATE
 			case "PUT": //A PUT request is used to CREATE and UPDATE a resource
-				System.out.println("put");
-				if(obj == null  && resourceManager.isNode(obj)){ // CREATE
+				try{
+					System.out.println("testing if " + lastRoute + " is already in");
+					Object dummy = resourceManager.getData(xmlDOM.getDocumentElement(), stringRoutes, 2);
+				}catch(Exception e){
+					System.out.println(lastRoute + " not here, creating");
 					Element tagCreate = xmlDOM.createElement(lastRoute);
-					//tagCreate.appendChild(xmlDOM.createTextNode(requestQuery));
-					tagCreate.setNodeValue(requestQuery);
+					tagCreate.appendChild(xmlDOM.createTextNode(requestQuery));
 					((MyNode)obj).getNode().appendChild(tagCreate);
-
-				}else if( resourceManager.isNode(obj)){ //UPDATE
-					((MyNode)obj).getNode().setNodeValue(requestQuery);
-				}else{
-					//list, handle error
+					break;
 				}
+				//if this is reached, then the tag existed and thats not permitted, so send error
+				System.out.println(lastRoute + " is already there so updating it");
+				Element tagCreate = xmlDOM.createElement(lastRoute);
+				tagCreate.appendChild(xmlDOM.createTextNode(requestQuery));
+				((MyNode)obj).getNode().appendChild(tagCreate);
 				break;
 
 			// DELETE
