@@ -279,12 +279,12 @@ final class HttpRequest implements Runnable {
 				break;
 
 			// CREATE BUT NOT UPDATE AN EXISTING ONE
-			case "POST":
+			case "POST": 
 				System.out.println("post");
 				break;
 
 			// CREATE AND UPDATE
-			case "PUT":
+			case "PUT": //A PUT request is used to CREATE and UPDATE a resource
 				System.out.println("put");
 				break;
 
