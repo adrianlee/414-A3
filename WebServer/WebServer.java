@@ -191,11 +191,16 @@ final class HttpRequest implements Runnable {
 
 		// Get outpu
 		System.out.println("getData() output: ");
+		String wildTag = "";
+		if(requestMethod.equals("PUT") || requestMethod.equals("POST") || requestMethod.equals("DELETE") ){
+			wildTag = routes.get(routes.size() - 1);
+			routes.remove(routes.size() - 1 );
+		}
+
 		String[] stringRoutes = new String[routes.size()];
+		stringRoutes = routes.toArray(stringRoutes);
+
 		try{
-
-			stringRoutes = routes.toArray(stringRoutes);
-
 			obj = resourceManager.getData(xmlDOM.getDocumentElement(), stringRoutes, 2);
 		} catch (Exception e) {
 			// handle xml not found!
@@ -211,23 +216,21 @@ final class HttpRequest implements Runnable {
 		Node node = null;
 		NodeList list = null;
 
-		if (resourceManager.isNode(obj)) {
-			System.out.println("object is a node");
-			// System.out.println(((MyNode)obj).getNode().getTextContent());
 
-			node = ((MyNode)obj).getNode();
-			System.out.println(getFirstLevelTextContent(node));
-		} else {
-			System.out.println("object is a list");
-			list = ((MyNode)obj).getList();
+		if(obj!=null){
+			if (resourceManager.isNode(obj)) {
+				System.out.println("object is a node");
+				// System.out.println(((MyNode)obj).getNode().getTextContent());
+
+				node = ((MyNode)obj).getNode();
+				System.out.println(getFirstLevelTextContent(node));
+			} else {
+				System.out.println("object is a list");
+				list = ((MyNode)obj).getList();
+			}
+		}else{
+			System.out.println("Obj is null");
 		}
-
-		if (obj != null) {
-
-		} else {
-			System.out.println("null");
-		}
-
 		System.out.println();
 
 		// Construct the response message header
@@ -263,8 +266,9 @@ final class HttpRequest implements Runnable {
 			case "POST":
 				System.out.println("post");
 				if(obj == null){ // CREATE
+					System.out.println("need to create" + wildTag );
 					if(resourceManager.isNode(obj)){
-						Element tagCreate = xmlDOM.createElement(stringRoutes[stringRoutes.length - 1]);
+						Element tagCreate = xmlDOM.createElement(wildTag);
 						//tagCreate.appendChild(xmlDOM.createTextNode(requestQuery));
 						tagCreate.setNodeValue(requestQuery);
 						((MyNode)obj).getNode().appendChild(tagCreate);
@@ -280,7 +284,7 @@ final class HttpRequest implements Runnable {
 			case "PUT": //A PUT request is used to CREATE and UPDATE a resource
 				System.out.println("put");
 				if(obj == null  && resourceManager.isNode(obj)){ // CREATE
-					Element tagCreate = xmlDOM.createElement(stringRoutes[stringRoutes.length - 1]);
+					Element tagCreate = xmlDOM.createElement(wildTag);
 					//tagCreate.appendChild(xmlDOM.createTextNode(requestQuery));
 					tagCreate.setNodeValue(requestQuery);
 					((MyNode)obj).getNode().appendChild(tagCreate);
@@ -295,6 +299,7 @@ final class HttpRequest implements Runnable {
 			// DELETE
 			case "DELETE":
 				System.out.println("delete");
+				//((MyNode)obj).getNode.removeChild() FINISH OFF
 				break;
 
 			// DEFAULT
