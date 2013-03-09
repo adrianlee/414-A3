@@ -239,6 +239,8 @@ final class HttpRequest implements Runnable {
 		}
 		System.out.println();
 
+		Object lastNodeInRoute;
+
 		switch (requestMethod) {
 			// GET
 			case "GET":
@@ -277,12 +279,12 @@ final class HttpRequest implements Runnable {
 					break;
 				}
 				//if this is reached, then the tag existed and thats not permitted, so send error
-				System.out.println(lastRoute + " is already there");
+				System.out.println(lastRoute + " is already there, cannot update with POST");
 				break;
 
 			// CREATE AND UPDATE
 			case "PUT": //A PUT request is used to CREATE and UPDATE a resource
-				Object lastNodeInRoute;
+				
 				try{
 					System.out.println("testing if " + lastRoute + " is already in");
 					lastNodeInRoute = resourceManager.getData(xmlDOM.getDocumentElement(), stringRoutes, 2);
@@ -304,7 +306,21 @@ final class HttpRequest implements Runnable {
 			// DELETE
 			case "DELETE":
 				System.out.println("delete");
-				//((MyNode)obj).getNode.removeChild() FINISH OFF
+				
+				try{
+					System.out.println("testing if " + lastRoute + " is already in");
+					lastNodeInRoute = resourceManager.getData(xmlDOM.getDocumentElement(), stringRoutes, 2);
+				}catch(Exception e){
+					System.out.println(lastRoute + " not here, nothing to delete: ERROR");
+					
+					break;
+				}
+				//if this is reached, then the tag existed and thats not permitted, so send error
+				System.out.println(lastRoute + " is already there so DELETING it");
+				
+				((MyNode)obj).getNode().removeChild(((MyNode)lastNodeInRoute).getNode());
+				
+				
 				break;
 
 			// DEFAULT
