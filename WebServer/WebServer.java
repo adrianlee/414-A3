@@ -264,7 +264,10 @@ final class HttpRequest implements Runnable {
         // CREATE BUT NOT UPDATE AN EXISTING ONE
         case "POST":
             System.out.println("post");
-
+            if(requestQuery.equals("")){
+            	responseCode = 400;
+            	break;
+            }
             //check if tag already exists
             synchronized (xmlDOM) {
                 try {
@@ -286,7 +289,10 @@ final class HttpRequest implements Runnable {
 
         // CREATE AND UPDATE
         case "PUT": //A PUT request is used to CREATE and UPDATE a resource
-
+        	if(requestQuery.equals("")){
+            	responseCode = 400;
+            	break;
+              }
             synchronized (xmlDOM) {
                 try {
                     System.out.println("testing if " + lastRoute + " is already in");
