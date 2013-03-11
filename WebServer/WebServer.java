@@ -289,10 +289,11 @@ final class HttpRequest implements Runnable {
 
         // CREATE AND UPDATE
         case "PUT": //A PUT request is used to CREATE and UPDATE a resource
-        	if(requestQuery.equals("")){
+        	if(requestQuery == "" || requestQuery == null){
             	responseCode = 400;
             	break;
               }
+
             synchronized (xmlDOM) {
                 try {
                     System.out.println("testing if " + lastRoute + " is already in");

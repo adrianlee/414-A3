@@ -141,7 +141,6 @@ public class ResourceManager {
                     }
                     return getData(currentNode, routes, ++r);
                 }
-
             }
             throw new FileNotFoundException();
         }
