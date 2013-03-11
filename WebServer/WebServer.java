@@ -264,7 +264,7 @@ final class HttpRequest implements Runnable {
         // CREATE BUT NOT UPDATE AN EXISTING ONE
         case "POST":
             System.out.println("post");
-            if(requestQuery.equals("")){
+            if(requestQuery == "" || requestQuery == null){
             	responseCode = 400;
             	break;
             }
