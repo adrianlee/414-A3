@@ -134,8 +134,17 @@ final class HttpRequest implements Runnable {
         String requestLine = inFromClient.readLine();
 
         // Display the request line
-        System.out.println();
-        // System.out.println(requestLine);
+        System.out.println("new request");
+
+        if (requestLine == null) {
+            os.close();
+            inFromClient.close();
+            socket.close();
+            return;
+        }
+
+        System.out.println(requestLine);
+
 
         // Extract the filename from the request line
         StringTokenizer tokens = new StringTokenizer(requestLine);
@@ -150,6 +159,8 @@ final class HttpRequest implements Runnable {
 
         // might want to decode after tokenizing path.
         requestPath = URLDecoder.decode(requestPath, "UTF-8");
+
+
 
         tokens = new StringTokenizer(requestPath, "/");
 
@@ -300,7 +311,16 @@ final class HttpRequest implements Runnable {
                     lastNodeInRoute = resourceManager.getData(xmlDOM.getDocumentElement(), stringRoutes, 2);
                 } catch (Exception e) {
                     System.out.println(lastRoute + " not here, creating");
+                    if(((MyNode)obj).name.equals("list")){
+                        Element tagCreate = xmlDOM.createElement(lastRoute);
+                        tagCreate.setAttribute("id", lastRoute);
+                        ((MyNode)obj).getNode().appendChild(tagCreate);
+                        responseCode = 201;
+                        break;
+                    }
+
                     Element tagCreate = xmlDOM.createElement(lastRoute);
+                    System.out.println(requestQuery);
                     tagCreate.appendChild(xmlDOM.createTextNode(requestQuery));
                     ((MyNode)obj).getNode().appendChild(tagCreate);
                     responseCode = 201;
@@ -308,10 +328,35 @@ final class HttpRequest implements Runnable {
                 }
                 //if this is reached, then the tag existed and thats not permitted, so send error
                 System.out.println(lastRoute + " is already there so updating it");
-                Element tagCreate = xmlDOM.createElement(lastRoute);
-                tagCreate.appendChild(xmlDOM.createTextNode(requestQuery));
-                ((MyNode)obj).getNode().removeChild(((MyNode)lastNodeInRoute).getNode());
-                ((MyNode)obj).getNode().appendChild(tagCreate);
+                if(((MyNode)obj).name.equals("list")){
+                    System.out.println("updating the node " + lastRoute + "to query: " + requestQuery);
+                    try{
+                        System.out.println("asdfsadf");
+                        // getFirstLevelTextContent(((MyNode)lastNodeInRoute).getNode());
+                        list = ((MyNode)obj).getList();
+
+                        System.out.println(list.item(1).getTextContent());
+                        list.item(1).setTextContent(requestQuery);
+                        System.out.println(list.item(1).getTextContent());
+
+                    }catch(Exception e){
+                        System.out.println("asdfsadfasdfsdaf");
+                        System.out.println(e);
+                        break;
+                    }
+
+                }else{
+                    try{
+                        System.out.println("asdfsadasdfdsfsadfsadfsadf");
+                        Element tagCreate = xmlDOM.createElement(lastRoute);
+                        tagCreate.appendChild(xmlDOM.createTextNode(requestQuery));
+                        ((MyNode)obj).getNode().removeChild(((MyNode)lastNodeInRoute).getNode());
+                        ((MyNode)obj).getNode().appendChild(tagCreate);
+                    }catch(Exception e){
+                        System.out.println(e);
+                        break;
+                    }
+                }
             }
 
             // EXAMPLE FAILURE FOR PUT
@@ -353,12 +398,16 @@ final class HttpRequest implements Runnable {
         }
 
         // Construct the response message header
-        outToClient.writeBytes(setStatusLine(responseCode));
-        outToClient.writeBytes(setContentType());
-        outToClient.writeBytes(CRLF);
 
         // Send the body of the message (the web object)
-        outToClient.writeBytes(responseBody);
+        try{
+            outToClient.writeBytes(setStatusLine(responseCode));
+            outToClient.writeBytes(setContentType());
+            outToClient.writeBytes(CRLF);
+            outToClient.writeBytes(responseBody);
+        }catch(Exception e){
+            System.out.println("this fucked up");
+        }
 
         // Close the streams and sockets
         os.close();

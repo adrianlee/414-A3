@@ -7,8 +7,8 @@ import javax.xml.parsers.*;
 import java.net.*;
 
 public class MyNode {
-    String name;
-    Object obj;
+    public String name;
+    public Object obj;
 
     public MyNode(String name, Object obj) {
 

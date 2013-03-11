@@ -1,0 +1,26 @@
+<base>
+	<testset>
+		<test id="1">
+			<testname>This is Test #1</testname>
+		</test>
+		<test id="2">
+			<testname>This is Test #2</testname>
+			<attribute>This is test #2's attribute</attribute>
+		</test>
+		<test id="3">
+			<testname>Test #3 is just to screw with you ;)</testname>
+			<testvalue>Payload: true</testvalue>
+		</test>
+	</testset>
+	<tree>
+		<node1>
+			<node2>
+				<node3>
+					<leaf id="1">Leaf 1</leaf>
+					<leaf id="2">Leaf 2</leaf>
+					<leaf id="3">Leaf 3</leaf>
+				</node3>
+			</node2>
+		</node1>
+	</tree>
+</base>
