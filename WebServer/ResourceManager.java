@@ -10,11 +10,13 @@ import java.io.FileNotFoundException;
 public class ResourceManager {
     String[] routes;
     Hashtable<String, Document> doms;
+    File[] xmlFiles;
 
     public ResourceManager(File path) {
         doms = buildTable(path);
     }
 
+         
     public Document getDom(String filename) throws FileNotFoundException {
         Object obj = doms.get(filename);
         if (obj == null) {
@@ -40,6 +42,11 @@ public class ResourceManager {
                 xmlCount--;
             }
         }
+        this.xmlFiles = xmlFiles;
+        return xmlFiles;
+    }
+
+    public File[] getXMLfiles(){
         return xmlFiles;
     }
 
