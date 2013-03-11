@@ -253,16 +253,25 @@ final class HttpRequest implements Runnable {
             System.out.println("get");
 
             synchronized (xmlDOM) {
+
+
+
                 if (obj != null) {
-                    if (resourceManager.isNode(obj)) {
-                        // responseBody += "Node" + CRLF;
-                        responseBody += getFirstLevelTextContent(node);
-                    } else {
-                        // responseBody += "NodeList" + CRLF;
-                        responseBody += getEnumeratedList(list);
-                    }
-                    responseCode = 200;
-                    // OK
+                    if(!resourceManager.isNode(obj)) {
+                        responseBody += list.item(1).getTextContent();
+                        System.out.println(responseBody);
+                        MyNode testNode = resourceManager.getData(xmlDOM.getDocumentElement(), routesWOchild, 2);
+                    }else{
+
+                        if (resourceManager.isNode(obj)) {
+                            // responseBody += "Node" + CRLF;
+                            responseBody += getFirstLevelTextContent(node);
+                        } else {
+                            // responseBody += "NodeList" + CRLF;
+                            responseBody += getEnumeratedList(list);
+                        }
+                        responseCode = 200;}
+                        // OK
                 } else {
                     System.out.println("null");
                     // Not found
@@ -304,57 +313,62 @@ final class HttpRequest implements Runnable {
             	responseCode = 400;
             	break;
               }
-
+            Boolean updateRequired = true;
             synchronized (xmlDOM) {
                 try {
                     System.out.println("testing if " + lastRoute + " is already in");
                     lastNodeInRoute = resourceManager.getData(xmlDOM.getDocumentElement(), stringRoutes, 2);
+
                 } catch (Exception e) {
                     System.out.println(lastRoute + " not here, creating");
+                    updateRequired = false;
                     if(((MyNode)obj).name.equals("list")){
                         Element tagCreate = xmlDOM.createElement(lastRoute);
                         tagCreate.setAttribute("id", lastRoute);
                         ((MyNode)obj).getNode().appendChild(tagCreate);
                         responseCode = 201;
                         break;
-                    }
-
-                    Element tagCreate = xmlDOM.createElement(lastRoute);
-                    System.out.println(requestQuery);
-                    tagCreate.appendChild(xmlDOM.createTextNode(requestQuery));
-                    ((MyNode)obj).getNode().appendChild(tagCreate);
-                    responseCode = 201;
-                    break;
-                }
-                //if this is reached, then the tag existed and thats not permitted, so send error
-                System.out.println(lastRoute + " is already there so updating it");
-                if(((MyNode)obj).name.equals("list")){
-                    System.out.println("updating the node " + lastRoute + "to query: " + requestQuery);
-                    try{
-                        System.out.println("asdfsadf");
-                        // getFirstLevelTextContent(((MyNode)lastNodeInRoute).getNode());
-                        list = ((MyNode)obj).getList();
-
-                        System.out.println(list.item(1).getTextContent());
-                        list.item(1).setTextContent(requestQuery);
-                        System.out.println(list.item(1).getTextContent());
-
-                    }catch(Exception e){
-                        System.out.println("asdfsadfasdfsdaf");
-                        System.out.println(e);
-                        break;
-                    }
-
-                }else{
-                    try{
-                        System.out.println("asdfsadasdfdsfsadfsadfsadf");
+                    }else{
                         Element tagCreate = xmlDOM.createElement(lastRoute);
+                        System.out.println(requestQuery);
                         tagCreate.appendChild(xmlDOM.createTextNode(requestQuery));
-                        ((MyNode)obj).getNode().removeChild(((MyNode)lastNodeInRoute).getNode());
                         ((MyNode)obj).getNode().appendChild(tagCreate);
-                    }catch(Exception e){
-                        System.out.println(e);
+                        responseCode = 201;
                         break;
+
+                    }
+
+                }
+                if(updateRequired){
+                    System.out.println(lastRoute + " is already there so updating it");
+                    if(((MyNode)obj).name.equals("list")){
+                        System.out.println("updating the node " + lastRoute + "to query: " + requestQuery);
+                        try{
+                            System.out.println("asdfsadf");
+                            // getFirstLevelTextContent(((MyNode)lastNodeInRoute).getNode());
+                            list = ((MyNode)obj).getList();
+
+                            System.out.println(list.item(1).getTextContent());
+                            list.item(1).setTextContent(requestQuery);
+                            System.out.println(list.item(1).getTextContent());
+
+                        }catch(Exception e){
+                            System.out.println("asdfsadfasdfsdaf");
+                            System.out.println(e);
+                            break;
+                        }
+
+                    }else{
+                        try{
+                            System.out.println("asdfsadasdfdsfsadfsadfsadf");
+                            Element tagCreate = xmlDOM.createElement(lastRoute);
+                            tagCreate.appendChild(xmlDOM.createTextNode(requestQuery));
+                            ((MyNode)obj).getNode().removeChild(((MyNode)lastNodeInRoute).getNode());
+                            ((MyNode)obj).getNode().appendChild(tagCreate);
+                        }catch(Exception e){
+                            System.out.println(e);
+                            break;
+                        }
                     }
                 }
             }
