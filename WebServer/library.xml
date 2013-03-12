@@ -1,4 +1,4 @@
-<catalog>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><catalog>
    <book id="bk101">
       <author>Gambardella, Matthew</author>
       <title>XML Developer's Guide</title>
@@ -7,7 +7,7 @@
       <publish_date>2000-10-01</publish_date>
       <description>An in-depth look at creating applications 
       with XML.</description>
-   </book>
+   <oadfhlkdasjfh>123456789</oadfhlkdasjfh></book>
    <book id="bk102">
       <author>Ralls, Kim</author>
       <title>Midnight Rain</title>

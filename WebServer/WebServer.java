@@ -16,6 +16,10 @@ import javax.xml.*;
 import javax.xml.parsers.*;
 import java.net.*;
 import java.io.FileNotFoundException;
+import javax.xml.transform.*;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.dom.DOMSource;
+
 
 /**
  * This is the main class which runs the loop that listens for incoming requests
@@ -185,17 +189,9 @@ final class HttpRequest implements Runnable {
 
         Document xmlDOM = null;
         Object obj = null;
+        Node node = null;
+        NodeList list = null;
 
-        // Retrieve document specified by route(0)
-        try {
-            xmlDOM = resourceManager.getDom(routes.get(0));
-        } catch (Exception e) {
-            // FileNotFoundException
-            System.out.println(e);
-        }
-
-        // Get output
-        System.out.println("getData() output: ");
         String lastRoute = routes.get(routes.size() - 1);
 
         String[] stringRoutes = new String[routes.size()];
@@ -204,42 +200,60 @@ final class HttpRequest implements Runnable {
         routes.remove(routes.size() - 1 );
         routesWOchild = routes.toArray(routesWOchild);
 
-        synchronized (xmlDOM) {
+
+        if (!stringRoutes[0].equals("save")) {
+
+            // Retrieve document specified by route(0)
             try {
-                if (requestMethod.equals("PUT") || requestMethod.equals("POST") || requestMethod.equals("DELETE") ) {
-                    obj = resourceManager.getData(xmlDOM.getDocumentElement(), routesWOchild, 2);
-                } else {
-                    obj = resourceManager.getData(xmlDOM.getDocumentElement(), stringRoutes, 2);
-                }
+                xmlDOM = resourceManager.getDom(routes.get(0));
             } catch (Exception e) {
-                // handle xml not found!
-                System.out.println("Something went wrong with getData()");
+                // FileNotFoundException
                 System.out.println(e);
             }
-        }
 
-        System.out.println();
+            // Get output
+            System.out.println("getData() output: ");
+            
 
-        System.out.println("getData() returned: ");
 
-        Node node = null;
-        NodeList list = null;
+        
 
-        // Cast Object to Node or List
-        if (obj != null) {
-            if (resourceManager.isNode(obj)) {
-                System.out.println("object is a node");
-                // System.out.println(((MyNode)obj).getNode().getTextContent());
-
-                node = ((MyNode)obj).getNode();
-                System.out.println(getFirstLevelTextContent(node));
-            } else {
-                System.out.println("object is a list");
-                list = ((MyNode)obj).getList();
+        
+            synchronized (xmlDOM) {
+                try {
+                    if (requestMethod.equals("PUT") || requestMethod.equals("POST") || requestMethod.equals("DELETE") ) {
+                        obj = resourceManager.getData(xmlDOM.getDocumentElement(), routesWOchild, 2);
+                    } else {
+                        obj = resourceManager.getData(xmlDOM.getDocumentElement(), stringRoutes, 2);
+                    }
+                } catch (Exception e) {
+                    // handle xml not found!
+                    System.out.println("Something went wrong with getData()");
+                    System.out.println(e);
+                }
             }
-        } else {
-            System.out.println("Obj is null");
-            responseCode = 404;
+
+            System.out.println();
+
+            System.out.println("getData() returned: ");
+
+
+            // Cast Object to Node or List
+            if (obj != null) {
+                if (resourceManager.isNode(obj)) {
+                    System.out.println("object is a node");
+                    // System.out.println(((MyNode)obj).getNode().getTextContent());
+
+                    node = ((MyNode)obj).getNode();
+                    System.out.println(getFirstLevelTextContent(node));
+                } else {
+                    System.out.println("object is a list");
+                    list = ((MyNode)obj).getList();
+                }
+            } else {
+                System.out.println("Obj is null");
+                responseCode = 404;
+            }
         }
 
         System.out.println();
@@ -280,9 +294,37 @@ final class HttpRequest implements Runnable {
             }
 
             break;
-
+            
         // CREATE BUT NOT UPDATE AN EXISTING ONE
         case "POST":
+            if(stringRoutes[0].equals("save")){
+                System.out.println("SAVE");
+                File[] xmlFiles = resourceManager.getXMLfiles();
+                Transformer transformer = TransformerFactory.newInstance().newTransformer();
+                if(stringRoutes[1].equals("all")){
+                    System.out.println("all");
+                    for(int d = 0; d<xmlFiles.length; d++){
+                        Result output = new StreamResult(xmlFiles[d]);
+                        Source input = new DOMSource(resourceManager.getDom(xmlFiles[d].getName().substring(0, xmlFiles[d].getName().length()-4)));
+                        transformer.transform(input, output);   
+                    }
+                }else{
+                    System.out.println("specified ");
+                    for(int d = 0; d<xmlFiles.length; d++){
+                        String resource = xmlFiles[d].getName();
+                        resource = resource.substring(0, resource.length()-4);
+                        if(resource.equals(stringRoutes[1])){
+                            System.out.println("Saved");
+                            Result output = new StreamResult(xmlFiles[d]);
+                            Source input = new DOMSource(resourceManager.getDom(resource));
+                            transformer.transform(input, output);
+                        }
+                    }
+                }
+                responseCode = 200;
+                break;
+            }
+
             System.out.println("post");
             if(requestQuery == "" || requestQuery == null){
             	responseCode = 400;
